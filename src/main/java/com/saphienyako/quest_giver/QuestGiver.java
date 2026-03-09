@@ -1,8 +1,18 @@
 package com.saphienyako.quest_giver;
 
 import com.mojang.logging.LogUtils;
+import com.saphienyako.quest_giver.network.QuestGiverNetwork;
+import com.saphienyako.quest_giver.quest.QuestManager;
+import com.saphienyako.quest_giver.quest.player.CapabilityQuests;
+import com.saphienyako.quest_giver.quest.reward.CommandReward;
+import com.saphienyako.quest_giver.quest.reward.ItemReward;
+import com.saphienyako.quest_giver.quest.reward.RewardTypes;
+import com.saphienyako.quest_giver.quest.task.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -18,7 +28,7 @@ import org.slf4j.Logger;
 public class QuestGiver
 {
     public static final String MOD_ID = "quest_giver";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public QuestGiver() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -27,10 +37,32 @@ public class QuestGiver
 
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
+        //Datapack for Quests
+        MinecraftForge.EVENT_BUS.addListener(this::reloadData);
+        //Player Capabilities
+        MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityQuests::attachPlayerCaps);
+        MinecraftForge.EVENT_BUS.addListener(CapabilityQuests::playerCopy);
+
+        // Quest task & reward types. Not in setup as they are required for datagen.
+        TaskTypes.register(new ResourceLocation(MOD_ID,"craft"), CraftTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"fey_gift"), GiftTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"item_stack"), ItemStackTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"kill"), KillTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"pet"), AnimalPetTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"tame"), AnimalTameTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"biome"), BiomeTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"structure"), StructureTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"special"), SpecialTask.INSTANCE);
+
+        RewardTypes.register(new ResourceLocation(MOD_ID, "item"), ItemReward.INSTANCE);
+        RewardTypes.register(new ResourceLocation(MOD_ID, "command"), CommandReward.INSTANCE);
+
+
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-
+        event.enqueueWork(QuestGiverNetwork::register);
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -50,5 +82,9 @@ public class QuestGiver
         public static void onClientSetup(FMLClientSetupEvent event) {
 
         }
+    }
+
+    public void reloadData(AddReloadListenerEvent event) {
+        event.addListener(QuestManager.createReloadListener());
     }
 }
