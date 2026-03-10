@@ -1,0 +1,123 @@
+package com.saphienyako.quest_giver.screen;
+
+import com.saphienyako.quest_giver.network.ConfirmQuestMessage;
+import com.saphienyako.quest_giver.network.QuestGiverNetwork;
+import com.saphienyako.quest_giver.quest.QuestDisplay;
+import com.saphienyako.quest_giver.screen.util.AnimatedText;
+import com.saphienyako.quest_giver.screen.util.TextProcessor;
+import com.saphienyako.quest_giver.screen.widgets.BackgroundWidget;
+import com.saphienyako.quest_giver.screen.widgets.EntityWidget;
+import com.saphienyako.quest_giver.screen.widgets.FancyButton;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+
+import javax.annotation.Nonnull;
+
+public class DisplayQuestScreen extends Screen {
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private final QuestDisplay display;
+    private final boolean hasConfirmationButtons;
+    private final int entityId;
+    private final Component title;
+    private final AnimatedText text;
+
+    //TODO
+    //This determines how many chars should appear each tick when displaying the quest text, 1 being very slow - 5 being very fast.
+    private final int quest_text_speed = 3;
+
+    private int left;
+    private int top;
+
+    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId) {
+        super(display.title);
+        this.display = display;
+        this.hasConfirmationButtons = hasConfirmationButtons;
+        this.entityId = entityId;
+
+        this.title = TextProcessor.INSTANCE.processLine(this.display.title);
+        this.text = new AnimatedText(BackgroundWidget.WIDTH - (2 * BackgroundWidget.HORIZONTAL_PADDING), BackgroundWidget.HEIGHT - (2 * BackgroundWidget.VERTICAL_PADDING), quest_text_speed, TextProcessor.INSTANCE.process(this.display.description));
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        this.left = (this.width / 2) - ((EntityWidget.WIDTH + BackgroundWidget.WIDTH) / 2);
+        this.top = (this.height / 2) - (BackgroundWidget.HEIGHT / 2);
+
+        this.addRenderableOnly(new BackgroundWidget(this.left + EntityWidget.WIDTH, this.top));
+
+        if (this.entityId != -1) {
+            Entity entity = Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.getEntity(this.entityId);
+            if (entity instanceof LivingEntity living) {
+                this.addRenderableWidget(new EntityWidget(this.left, this.top + (BackgroundWidget.HEIGHT - EntityWidget.HEIGHT) / 2, living));
+            }
+        }
+
+        this.addRenderableWidget(FancyButton.makeSmall(this.left + EntityWidget.WIDTH + 320, this.top + 58, Component.literal(this.text.isOnLastPage() ? "x" : ">>"), this.text::canContinue, button -> {
+            if (this.text.isOnLastPage()) {
+                this.onClose();
+            } else {
+                this.text.nextPage();
+                button.setMessage(Component.literal(this.text.isOnLastPage() ? "x" : ">>"));
+            }
+        }));
+
+        if (this.hasConfirmationButtons) {
+            this.addRenderableWidget(FancyButton.makeLarge(this.left + EntityWidget.WIDTH + 80, this.top + 123, Component.translatable("message.quest_giver.quest_accept"), button -> {
+                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(true));
+                this.onClose();
+            }));
+            this.addRenderableWidget(FancyButton.makeLarge(this.left + EntityWidget.WIDTH + 180, this.top + 123, Component.translatable("message.quest_giver.quest_decline"), button -> {
+                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(false));
+                this.onClose();
+            }));
+        }
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+    }
+
+    @Override
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        graphics.pose().pushPose();
+        this.renderBackground(graphics);
+        graphics.pose().translate(0, 0, 20);
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        graphics.pose().translate(0, 0, 20);
+        this.drawTextLines(graphics, mouseX, mouseY);
+        graphics.pose().popPose();
+    }
+
+    private void drawTextLines(GuiGraphics graphics, int mouseX, int mouseY) {
+        if (this.minecraft != null) {
+            graphics.drawString(this.minecraft.font, this.title, (this.width / 2) - (this.minecraft.font.width(this.title) / 2), this.top - this.minecraft.font.lineHeight - 6, 0xFFFFFF, false);
+            this.text.render(graphics, this.left + EntityWidget.WIDTH + BackgroundWidget.HORIZONTAL_PADDING, this.top + BackgroundWidget.VERTICAL_PADDING);
+        }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.text != null) {
+            this.text.tick();
+        }
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return !hasConfirmationButtons;
+    }
+}

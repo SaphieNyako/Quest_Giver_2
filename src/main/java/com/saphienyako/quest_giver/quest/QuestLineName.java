@@ -1,12 +1,9 @@
 package com.saphienyako.quest_giver.quest;
 
-import net.minecraft.world.entity.EntityType;
-
 import javax.annotation.Nullable;
-import javax.swing.*;
 import java.util.Locale;
 
-public enum QuestName {
+public enum QuestLineName {
 
     //INSTEAD OF ALIGNMENT
     //TODO make this datapacked
@@ -20,11 +17,11 @@ public enum QuestName {
     public final String id;
 
 
-    QuestName(String id) {
+    QuestLineName(String id) {
         this.id = id;
     }
 
-    public static QuestName byId(String id) {
+    public static QuestLineName byId(String id) {
         return switch (id.toLowerCase(Locale.ROOT).trim()) {
             case "spring" -> SPRING;
             case "summer" -> SUMMER;
@@ -34,12 +31,12 @@ public enum QuestName {
         };
     }
 
-    public static String optionId(@Nullable QuestName name) {
+    public static String optionId(@Nullable QuestLineName name) {
         return name == null ? "name missing" : name.id;
     }
 
     @Nullable
-    public static QuestName byOptionId(String id) {
+    public static QuestLineName byOptionId(String id) {
         try {
             return byId(id);
         } catch (IllegalArgumentException e) {

@@ -29,9 +29,9 @@ public class QuestData {
 
 
     @Nullable
-    private QuestName currentQuestName;
+    private QuestLineName currentQuestLine;
     @Nullable
-    private QuestName pendingQuestName;
+    private QuestLineName pendingQuestLine;
 
     public static QuestData get(ServerPlayer player) {
         // Capability should always be there.
@@ -49,17 +49,23 @@ public class QuestData {
         this.startNextQuests();
     }
 
-    public boolean canComplete(QuestName questName) {
-        return this.currentQuestName == questName;
+    public boolean canComplete(QuestLineName questLine) {
+        return this.currentQuestLine == questLine;
     }
 
     @Nullable
-    public QuestDisplay initialize(QuestName questName) {
-        if (this.currentQuestName == null) {
-            QuestLine quests = QuestManager.getQuests(questName);
-            Quest rootQuest = quests == null ? null : quests.getQuest(new ResourceLocation(QuestGiver.MOD_ID, "root"));
+    public QuestDisplay initialize(QuestLineName questLine) {
+        if (this.currentQuestLine == null) {
+            QuestLine quests = QuestManager.getQuests(questLine);
+
+           // Quest rootQuest = quests == null ? null : quests.getQuest(new ResourceLocation(QuestGiver.MOD_ID, "quest_lines/" + questLine.id + "/root"));
+
+            Quest rootQuest = quests.getRootQuest();
+
+            QuestGiver.LOGGER.info("Loaded quest: {}", rootQuest);
+
             if (rootQuest != null) {
-                this.pendingQuestName = questName;
+                this.pendingQuestLine = questLine;
                 return rootQuest.start;
             } else {
                 return null;
@@ -69,14 +75,14 @@ public class QuestData {
         }
     }
 
-    public void acceptQuest() {
-        if (this.pendingQuestName != null && this.currentQuestName == null && this.player != null) {
-            this.currentQuestName = this.pendingQuestName;
-            this.pendingQuestName = null;
+    public void acceptQuestLine() {
+        if (this.pendingQuestLine != null && this.currentQuestLine == null && this.player != null) {
+            this.currentQuestLine = this.pendingQuestLine;
+            this.pendingQuestLine = null;
             this.pendingCompletion.clear();
             this.completedQuests.clear();
             this.activeQuests.clear();
-            QuestLine quests = QuestManager.getQuests(this.currentQuestName);
+            QuestLine quests = QuestManager.getQuests(this.currentQuestLine);
             Quest rootQuest = quests == null ? null : quests.getQuest(new ResourceLocation(QuestGiver.MOD_ID, "root"));
             if (rootQuest != null && rootQuest.tasks.isEmpty()) {
                 for (QuestReward reward : rootQuest.rewards) {
@@ -88,27 +94,28 @@ public class QuestData {
         }
     }
 
-    public void denyQuestName() {
-        this.pendingQuestName = null;
+
+    public void denyQuestLine() {
+        this.pendingQuestLine = null;
     }
 
     public boolean reset() {
-        QuestName oldQuestName = this.currentQuestName;
-        this.currentQuestName = null;
+        QuestLineName oldQuestLineName = this.currentQuestLine;
+        this.currentQuestLine = null;
         this.pendingCompletion.clear();
         this.completedQuests.clear();
         this.activeQuests.clear();
-        return oldQuestName != null;
+        return oldQuestLineName != null;
     }
 
     @Nullable
     public QuestLine getQuestLine() {
-        return this.currentQuestName == null ? null : QuestManager.getQuests(this.currentQuestName);
+        return this.currentQuestLine == null ? null : QuestManager.getQuests(this.currentQuestLine);
     }
 
     @Nullable
-    public QuestName getQuestName() {
-        return this.currentQuestName;
+    public QuestLineName getQuestName() {
+        return this.currentQuestLine;
     }
 
     @Nullable
@@ -277,7 +284,7 @@ public class QuestData {
 
     public CompoundTag write() {
         CompoundTag nbt = new CompoundTag();
-        nbt.putString("QuestName", QuestName.optionId(this.currentQuestName));
+        nbt.putString("QuestName", QuestLineName.optionId(this.currentQuestLine));
         ListTag pending = new ListTag();
         for (ResourceLocation quest : this.pendingCompletion) {
             pending.add(StringTag.valueOf(quest.toString()));
@@ -297,7 +304,7 @@ public class QuestData {
     }
 
     public void read(CompoundTag nbt) {
-        this.currentQuestName = QuestName.byOptionId(nbt.getString("QuestName"));
+        this.currentQuestLine = QuestLineName.byOptionId(nbt.getString("QuestName"));
         ListTag pending = nbt.getList("Pending", Tag.TAG_STRING);
         this.pendingCompletion.clear();
         for (int i = 0; i < pending.size(); i++) {

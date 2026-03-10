@@ -1,0 +1,28 @@
+{
+  "parent": "quest_giver:quest_01",
+  "complete": {
+    "description": {
+      "translate": "quest.feywild.autumn.quest_02.complete.description"
+    },
+    "title": {
+      "translate": "quest.feywild.autumn.quest_02.complete.title"
+    }
+  },
+  "icon": "minecraft:smoker",
+  "start": {
+    "description": {
+      "translate": "Craft a Smoker and move to the next quest."
+    },
+    "title": {
+      "translate": "Craft Test"
+    }
+  },
+  "tasks": [
+    {
+      "id": "quest_giver:craft",
+      "item": {
+        "item": "minecraft:smoker"
+      }
+    }
+  ]
+}

@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class QuestGiverNetwork {
 
-    private static SimpleChannel INSTANCE;
+    public static SimpleChannel INSTANCE;
     private static int packetId = 0;
     private static int id() {
         return packetId++;
@@ -25,15 +25,33 @@ public class QuestGiverNetwork {
                 .simpleChannel();
 
         INSTANCE = net;
-        /* EXAMPLE
-        net.messageBuilder(ParticleMessage.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ParticleMessage::decode)
-                .encoder(ParticleMessage::encode)
-                .consumerMainThread(ParticleMessage::handle)
+
+        //CLIENT
+        net.messageBuilder(OpenQuestDisplayMessage.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(OpenQuestDisplayMessage::decode)
+                .encoder(OpenQuestDisplayMessage::encode)
+                .consumerMainThread(OpenQuestDisplayMessage::handle)
                 .add();
 
-         */
+        net.messageBuilder(OpenQuestSelectionMessage.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(OpenQuestSelectionMessage::decode)
+                .encoder(OpenQuestSelectionMessage::encode)
+                .consumerMainThread(OpenQuestSelectionMessage::handle)
+                .add();
 
+
+        //SERVER
+        net.messageBuilder(ConfirmQuestMessage.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(ConfirmQuestMessage::decode)
+                .encoder(ConfirmQuestMessage::encode)
+                .consumerMainThread(ConfirmQuestMessage::handle)
+                .add();
+
+        net.messageBuilder(SelectQuestMessage.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(SelectQuestMessage::decode)
+                .encoder(SelectQuestMessage::encode)
+                .consumerMainThread(SelectQuestMessage::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

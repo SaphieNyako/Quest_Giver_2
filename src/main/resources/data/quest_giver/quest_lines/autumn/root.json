@@ -1,0 +1,11 @@
+{
+  "icon": "minecraft:book",
+  "start": {
+    "description": {
+      "translate": "This is the start of the quest. Giving option to accept or decline the Quest Line."
+    },
+    "title": {
+      "translate": "Root QuestLine Starts"
+    }
+  }
+}

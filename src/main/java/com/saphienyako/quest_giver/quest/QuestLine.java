@@ -40,6 +40,14 @@ public class QuestLine {
         return this.quests.getOrDefault(id, null);
     }
 
+    @Nullable
+    public Quest getRootQuest() {
+        return quests.values().stream()
+                .filter(q -> q.parents.isEmpty())
+                .findFirst()
+                .orElse(null);
+    }
+
     public Set<Quest> getNextQuests(Set<ResourceLocation> active, Set<ResourceLocation> completed) {
         return this.questOrder.entrySet().stream()
                 .filter(entry -> !active.contains(entry.getKey().id)) // Filter out quests that are currently active
