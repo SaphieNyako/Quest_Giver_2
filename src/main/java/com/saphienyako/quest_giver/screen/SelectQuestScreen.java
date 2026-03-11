@@ -22,11 +22,14 @@ public class SelectQuestScreen extends Screen {
     @SuppressWarnings("FieldCanBeLocal")
     private int left;
     private int top;
+
+    private String questLineId;
     
-    public SelectQuestScreen(Component name, List<SelectableQuest> quests, int entityId) {
+    public SelectQuestScreen(Component name, List<SelectableQuest> quests, int entityId, String questLineId) {
         super(name);
         this.quests = ImmutableList.copyOf(quests);
         this.entityId = entityId;
+        this.questLineId = questLineId;
     }
 
     @Override
@@ -37,7 +40,7 @@ public class SelectQuestScreen extends Screen {
         this.top = (this.height / 2) - (Math.max(EntityWidget.HEIGHT, (SelectQuestWidget.HEIGHT + 2) * this.quests.size()) / 2);
         
         for (int i = 0; i < this.quests.size(); i++) {
-            this.addRenderableWidget(new SelectQuestWidget(left + EntityWidget.WIDTH + 25, this.top + ((SelectQuestWidget.HEIGHT + 2) * i), this.quests.get(i)));
+            this.addRenderableWidget(new SelectQuestWidget(left + EntityWidget.WIDTH + 25, this.top + ((SelectQuestWidget.HEIGHT + 2) * i), this.quests.get(i), questLineId));
         }
 
         if (this.entityId != -1) {

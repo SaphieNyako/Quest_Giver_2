@@ -26,10 +26,8 @@ public class QuestProgress {
         String progressMsg = null;
         Quest quest = quests.getQuest(this.quest);
         if (quest != null) {
-            // Check each task of the quest
             for (int i = 0; i < quest.tasks.size(); i++) {
                 if (quest.tasks.get(i).checkCompleted(player, type, element)) {
-                    // Success. Increase the counter for that task by one.
                     this.taskProgress.putIfAbsent(i, 0);
                     this.taskProgress.computeIfPresent(i, (idx, value) -> value + 1);
                     if (progressMsg == null) progressMsg = this.taskProgress.get(i) + " / " + quest.tasks.get(i).times;

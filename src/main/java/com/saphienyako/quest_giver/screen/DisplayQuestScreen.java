@@ -33,11 +33,14 @@ public class DisplayQuestScreen extends Screen {
     private int left;
     private int top;
 
-    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId) {
+    private String questLineId;
+
+    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId, String questLineId) {
         super(display.title);
         this.display = display;
         this.hasConfirmationButtons = hasConfirmationButtons;
         this.entityId = entityId;
+        this.questLineId = questLineId;
 
         this.title = TextProcessor.INSTANCE.processLine(this.display.title);
         this.text = new AnimatedText(BackgroundWidget.WIDTH - (2 * BackgroundWidget.HORIZONTAL_PADDING), BackgroundWidget.HEIGHT - (2 * BackgroundWidget.VERTICAL_PADDING), quest_text_speed, TextProcessor.INSTANCE.process(this.display.description));
@@ -70,11 +73,11 @@ public class DisplayQuestScreen extends Screen {
 
         if (this.hasConfirmationButtons) {
             this.addRenderableWidget(FancyButton.makeLarge(this.left + EntityWidget.WIDTH + 80, this.top + 123, Component.translatable("message.quest_giver.quest_accept"), button -> {
-                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(true));
+                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(this.questLineId,  true));
                 this.onClose();
             }));
             this.addRenderableWidget(FancyButton.makeLarge(this.left + EntityWidget.WIDTH + 180, this.top + 123, Component.translatable("message.quest_giver.quest_decline"), button -> {
-                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(false));
+                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(this.questLineId,false));
                 this.onClose();
             }));
         }

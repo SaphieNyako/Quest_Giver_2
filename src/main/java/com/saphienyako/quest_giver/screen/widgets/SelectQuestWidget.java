@@ -29,16 +29,19 @@ public class SelectQuestWidget extends Button {
     private final SelectableQuest quest;
     private final ItemStack iconStack;
 
-    public SelectQuestWidget(int x, int y, SelectableQuest quest) {
+    private String questLineId;
+
+    public SelectQuestWidget(int x, int y, SelectableQuest quest, String questLineId) {
         super(x, y, WIDTH, HEIGHT, TextProcessor.INSTANCE.processLine(quest.display().title), b -> {}, l -> Component.empty());
         this.quest = quest;
         this.iconStack = new ItemStack(quest.icon());
+        this.questLineId = questLineId;
     }
 
     @Override
     public void onPress() {
         super.onPress();
-        QuestGiverNetwork.sendToServer(new SelectQuestMessage(this.quest.id()));
+        QuestGiverNetwork.sendToServer(new SelectQuestMessage(this.questLineId, this.quest.id()));
     }
 
     @Override

@@ -1,15 +1,11 @@
 package com.saphienyako.quest_giver.entity;
 
-import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.QuestGiverAPI;
-import com.saphienyako.quest_giver.quest.QuestLineName;
 import com.saphienyako.quest_giver.quest.player.QuestData;
 import com.saphienyako.quest_giver.quest.task.SpecialTask;
-import com.saphienyako.quest_giver.quest.util.SpecialTaskAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -27,7 +23,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
-import java.util.Random;
 
 public class QuestVillagerEntity extends Villager {
 

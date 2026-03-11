@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -98,7 +99,15 @@ public class Quest {
             parents.add(new ResourceLocation(json.get("parent").getAsString()));
         }
         boolean repeatable = json.has("repeatable") && json.get("repeatable").getAsBoolean();
-        Item icon = ForgeRegistries.ITEMS.getValue(new ResourceLocation(json.get("icon").getAsString()));
+
+
+        ResourceLocation itemId = new ResourceLocation(json.get("icon").getAsString());
+        Item icon = ForgeRegistries.ITEMS.getValue(itemId);
+
+        if (icon == null) {
+            throw new JsonParseException("Invalid item icon: " + itemId + " for quest " + id);
+        }
+
         QuestDisplay start = QuestDisplay.fromJson(json.get("start").getAsJsonObject());
         QuestDisplay complete = json.has("complete") ? QuestDisplay.fromJson(json.get("complete").getAsJsonObject()) : null;
         ImmutableList.Builder<QuestTask> tasks = ImmutableList.builder();

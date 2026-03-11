@@ -9,24 +9,25 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public record ConfirmQuestMessage(boolean accept) {
-
+public record ConfirmQuestMessage(String questLineId, boolean accept) {
 
     public static void encode(ConfirmQuestMessage msg, FriendlyByteBuf buffer) {
+        buffer.writeUtf(msg.questLineId());
         buffer.writeBoolean(msg.accept());
     }
 
     public static ConfirmQuestMessage decode(FriendlyByteBuf buffer) {
-        return new ConfirmQuestMessage(buffer.readBoolean());
+        return new ConfirmQuestMessage(buffer.readUtf(), buffer.readBoolean());
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         ServerPlayer player = supplier.get().getSender();
         if (player != null) {
-            if (this.accept) {
-                QuestData.get(player).acceptQuestLine();
+            QuestData data = QuestData.get(player);
+            if (accept()) {
+                data.acceptQuestLine(questLineId());
             } else {
-                QuestData.get(player).denyQuestLine();
+                data.denyQuestLine(questLineId());
             }
         }
     }

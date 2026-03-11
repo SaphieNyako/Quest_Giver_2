@@ -4,8 +4,8 @@ import com.saphienyako.quest_giver.network.OpenQuestDisplayMessage;
 import com.saphienyako.quest_giver.network.OpenQuestSelectionMessage;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
-import com.saphienyako.quest_giver.quest.QuestLineName;
 import com.saphienyako.quest_giver.quest.player.QuestData;
+import com.saphienyako.quest_giver.quest.player.QuestLineData;
 import com.saphienyako.quest_giver.quest.task.GiftTask;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import net.minecraft.network.chat.Component;
@@ -27,45 +27,58 @@ public class QuestGiverAPI {
      * @param displayName   The name to show in the GUI (usually entity.getDisplayName())
      * @param hand          The hand used for interaction
      */
-     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId) {
-         QuestData quests = QuestData.get(player);
+    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId) {
 
-         // Complete any pending quests first
-         QuestDisplay completionDisplay = quests.completePendingQuest();
-         if (completionDisplay != null) {
-             sendQuestDisplay(player, completionDisplay, false, entityId);
-             player.swing(hand, true);
-             return;
-         }
+        QuestData questData = QuestData.get(player);
 
-         // Show active quests
-         List<SelectableQuest> active = quests.getActiveQuests();
-         if (!active.isEmpty()) {
-             if (active.size() == 1) {
-                 sendQuestDisplay(player, active.get(0).display(), false, entityId);
-             } else {
-                 sendQuestSelection(player, displayName, active, entityId);
-             }
-             player.swing(hand, true);
-             //return;
-         }
+        QuestLineData line = questData.getQuestLine(questLineId);
 
-         // Initialize a new quest if none active
-         QuestDisplay initDisplay = quests.initialize(questLineId);
-         QuestGiver.LOGGER.info("Initiating Quest:" + initDisplay);
-         if (initDisplay != null) {
-             sendQuestDisplay(player, initDisplay, true, entityId);
-             player.swing(hand, true);
-         }
-     }
+        // If the questline already exists
+        if (line != null) {
 
-    private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId) {
-        QuestGiverNetwork.sendToPlayer(new OpenQuestDisplayMessage(display, isNew, entityId), player);
+            // 1️⃣ Complete pending quests
+            QuestDisplay completionDisplay = line.completePendingQuest();
+
+            if (completionDisplay != null) {
+                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId);
+                player.swing(hand, true);
+                return;
+            }
+
+            // 2️⃣ Show active quests
+            List<SelectableQuest> active = line.getActiveQuests();
+
+            if (!active.isEmpty()) {
+
+                if (active.size() == 1) {
+                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId);
+                } else {
+                    sendQuestSelection(player, displayName, active, entityId, questLineId);
+                }
+
+                player.swing(hand, true);
+                return;
+            }
+        }
+
+        // 3️⃣ Initialize the questline
+        QuestDisplay initDisplay = questData.initialize(questLineId);
+
+        QuestGiver.LOGGER.info("Initiating Quest: {}", initDisplay);
+
+        if (initDisplay != null) {
+            sendQuestDisplay(player, initDisplay, true, entityId, questLineId);
+            player.swing(hand, true);
+        }
     }
 
-    private static void sendQuestSelection(ServerPlayer player, Component displayName, List<SelectableQuest> quests, int entityId) {
+    private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId, String questLineId) {
+        QuestGiverNetwork.sendToPlayer(new OpenQuestDisplayMessage(display, isNew, entityId, questLineId), player);
+    }
+
+    private static void sendQuestSelection(ServerPlayer player, Component displayName, List<SelectableQuest> quests, int entityId, String questLineId) {
         QuestGiverNetwork.sendToPlayer(
-                new OpenQuestSelectionMessage(displayName, quests, entityId), player);
+                new OpenQuestSelectionMessage(displayName, quests, entityId, questLineId), player);
     }
 
     /**
