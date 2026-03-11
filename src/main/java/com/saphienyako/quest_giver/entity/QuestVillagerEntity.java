@@ -3,6 +3,9 @@ package com.saphienyako.quest_giver.entity;
 import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.QuestGiverAPI;
 import com.saphienyako.quest_giver.quest.QuestLineName;
+import com.saphienyako.quest_giver.quest.player.QuestData;
+import com.saphienyako.quest_giver.quest.task.SpecialTask;
+import com.saphienyako.quest_giver.quest.util.SpecialTaskAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,9 +45,21 @@ public class QuestVillagerEntity extends Villager {
         InteractionResult superResult = super.interactAt(player, vec, hand);
         ItemStack stack = player.getItemInHand(hand);
         if (superResult == InteractionResult.PASS) {
-                if (stack.isEmpty() && player instanceof ServerPlayer) {
-                    QuestGiverAPI.interactQuest((ServerPlayer)player, this.getId(), Component.literal("Test Quest"), hand, QuestLineName.AUTUMN);
-                }
+            if (stack.isEmpty() && player instanceof ServerPlayer) {
+                QuestGiverAPI.interactQuest((ServerPlayer)player, this.getId(), Component.literal("Example Quest"), hand, "example_quest");
+            }
+
+             else if (!stack.isEmpty() && player instanceof ServerPlayer && QuestGiverAPI.tryAcceptGift((ServerPlayer) player, hand)) {
+                player.swing(hand, true);
+            }
+
+            else if (player.getItemInHand(hand).getItem() == Items.NAME_TAG) {
+                setCustomName(player.getItemInHand(hand).getHoverName().copy());
+                setCustomNameVisible(true);
+                    if (player instanceof ServerPlayer) {
+                        QuestData.get((ServerPlayer) player).checkComplete(SpecialTask.INSTANCE, "special_task_example");
+                    }
+            }
 
             return InteractionResult.sidedSuccess(this.level().isClientSide);
         } else {

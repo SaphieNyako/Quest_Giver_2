@@ -10,7 +10,10 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -80,8 +83,31 @@ public class EventListener {
     @SubscribeEvent
     public void entityInteract(PlayerInteractEvent.EntityInteract event) {
         if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
-            QuestData.get(player).checkComplete(AnimalPetTask.INSTANCE, event.getTarget());
+            if(player.getMainHandItem() == ItemStack.EMPTY) {
+                QuestData.get(player).checkComplete(AnimalPetTask.INSTANCE, event.getTarget());
+            }
+
+            Entity target = event.getTarget();
+
+            // Example: Start quest when interacting with a wolf named "Wolfie"
+            if (target instanceof Wolf wolf && wolf.hasCustomName()) {
+
+                String name = wolf.getCustomName().getString();
+
+                if (name.equalsIgnoreCase("Wolfie")) {
+
+                    // Start the quest line with your helper
+                    // entityId = wolf.getId(), hand = event.getHand(), questLineId = the ID of your quest line
+                    QuestGiverAPI.interactQuest(player, wolf.getId(), wolf.getDisplayName(), event.getHand(), "wolf_quest");
+
+                }
+            }
+
         }
+
+        // Example: Start quest when interacting with a wolf named "Wolfie"
+
+
     }
 
     //TODO Tree Grow

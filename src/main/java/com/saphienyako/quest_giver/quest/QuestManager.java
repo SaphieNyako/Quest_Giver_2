@@ -5,21 +5,20 @@ import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.data.QuestGiverDataLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 public class QuestManager {
 
-    private static Map<QuestLineName, QuestLine> questLines = ImmutableMap.of();
+    private static Map<String, QuestLine> questLines = ImmutableMap.of();
 
-    public static QuestLine getQuests(QuestLineName questLineName) {
-        return questLines.getOrDefault(questLineName, QuestLine.EMPTY);
+    public static QuestLine getQuests(String questLineId) {
+        return questLines.getOrDefault(questLineId, QuestLine.EMPTY);
     }
 
     public static PreparableReloadListener createReloadListener() {
@@ -32,22 +31,38 @@ public class QuestManager {
 
             @Override
             protected void apply(Void value, ResourceManager rm, ProfilerFiller profiler) {
+
                 QuestGiver.LOGGER.info("Loading quest lines...");
 
-                EnumMap<QuestLineName, QuestLine> lines = new EnumMap<>(QuestLineName.class);
+                Map<String, QuestLine> lines = new HashMap<>();
 
-                for (QuestLineName questLineName : QuestLineName.values()) {
-                    try {
-                        Map<ResourceLocation, Quest> loaded =
-                                QuestGiverDataLoader.loadJson(rm, "quest_lines/" + questLineName.id, Quest::fromJson);
+                try {
 
-                        QuestGiver.LOGGER.info("Loaded {} quests for {}", loaded.size(), questLineName);
+                    Map<ResourceLocation, Resource> resources = rm.listResources("quest_lines", rl -> rl.getPath().endsWith(".json"));
 
-                        lines.put(questLineName, new QuestLine(loaded));
+                    Set<String> discoveredLines = new HashSet<>();
 
-                    } catch (Exception e) {
-                        QuestGiver.LOGGER.error("Failed to load quests for {}", questLineName, e);
+                    for (ResourceLocation rl : resources.keySet()) {
+
+                        String path = rl.getPath();
+                        String[] split = path.split("/");
+
+                        if (split.length >= 2) {
+                            discoveredLines.add(split[1]);
+                        }
                     }
+
+                    for (String lineId : discoveredLines) {
+
+                        Map<ResourceLocation, Quest> loaded = QuestGiverDataLoader.loadJson(rm, "quest_lines/" + lineId, Quest::fromJson);
+
+                        QuestGiver.LOGGER.info("Loaded {} quests for {}", loaded.size(), lineId);
+
+                        lines.put(lineId, new QuestLine(loaded));
+                    }
+
+                } catch (Exception e) {
+                    QuestGiver.LOGGER.error("Failed loading quest lines", e);
                 }
 
                 questLines = Collections.unmodifiableMap(lines);

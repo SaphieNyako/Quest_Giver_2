@@ -5,7 +5,7 @@
       "translate": "You tamed a wolf!"
     },
     "title": {
-      "translate": "Tame Test"
+      "translate": "Tame Example"
     }
   },
   "icon": "minecraft:bone",
@@ -14,7 +14,7 @@
       "translate": "Please Tame a Wolf!"
     },
     "title": {
-      "translate": "Tame Test"
+      "translate": "Tame Example"
     }
   },
   "tasks": [

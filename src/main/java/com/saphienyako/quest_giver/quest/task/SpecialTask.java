@@ -7,38 +7,43 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Locale;
 
-public class SpecialTask implements TaskType<SpecialTaskAction, SpecialTaskAction> {
+public class SpecialTask implements TaskType<String, String> {
 
     public static final SpecialTask INSTANCE = new SpecialTask();
 
-    private SpecialTask() {
+    private SpecialTask() {}
 
+    @Override
+    public Class<String> element() {
+        return String.class;
     }
 
     @Override
-    public Class<SpecialTaskAction> element() {
-        return SpecialTaskAction.class;
+    public Class<String> testType() {
+        return String.class;
     }
 
     @Override
-    public Class<SpecialTaskAction> testType() {
-        return SpecialTaskAction.class;
+    public boolean checkCompleted(ServerPlayer player, String element, String match) {
+        return element.equals(match);
     }
 
     @Override
-    public boolean checkCompleted(ServerPlayer player, SpecialTaskAction element, SpecialTaskAction match) {
-        return element == match;
+    public String fromJson(JsonObject json) {
+
+        String action = json.get("action").getAsString().toLowerCase(Locale.ROOT);
+
+        if (!SpecialTaskAction.isValid(action)) {
+            throw new IllegalStateException("Unknown special task action: " + action);
+        }
+
+        return action;
     }
 
     @Override
-    public SpecialTaskAction fromJson(JsonObject json) {
-        return SpecialTaskAction.valueOf(json.get("action").getAsString().toUpperCase(Locale.ROOT));
-    }
-
-    @Override
-    public JsonObject toJson(SpecialTaskAction element) {
+    public JsonObject toJson(String element) {
         JsonObject json = new JsonObject();
-        json.addProperty("action", element.name().toLowerCase(Locale.ROOT));
+        json.addProperty("action", element);
         return json;
     }
 }

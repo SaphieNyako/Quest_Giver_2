@@ -27,7 +27,7 @@ public class QuestGiverAPI {
      * @param displayName   The name to show in the GUI (usually entity.getDisplayName())
      * @param hand          The hand used for interaction
      */
-     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, QuestLineName questLineName) {
+     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId) {
          QuestData quests = QuestData.get(player);
 
          // Complete any pending quests first
@@ -51,7 +51,7 @@ public class QuestGiverAPI {
          }
 
          // Initialize a new quest if none active
-         QuestDisplay initDisplay = quests.initialize(questLineName);
+         QuestDisplay initDisplay = quests.initialize(questLineId);
          QuestGiver.LOGGER.info("Initiating Quest:" + initDisplay);
          if (initDisplay != null) {
              sendQuestDisplay(player, initDisplay, true, entityId);
@@ -95,13 +95,25 @@ public class QuestGiverAPI {
      * @param message   Send a component message to the player after receiving the item
      */
 
-    private boolean tryAcceptGift(ServerPlayer player, InteractionHand hand, Component message) {
+    public static boolean tryAcceptGift(ServerPlayer player, InteractionHand hand, Component message) {
         ItemStack input = player.getItemInHand(hand);
         if (!input.isEmpty()) {
 
             if (QuestData.get(player).checkComplete(GiftTask.INSTANCE, input)) {
                 if (!player.isCreative()) input.shrink(1);
                 player.sendSystemMessage(message);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean tryAcceptGift(ServerPlayer player, InteractionHand hand) {
+        ItemStack input = player.getItemInHand(hand);
+        if (!input.isEmpty()) {
+
+            if (QuestData.get(player).checkComplete(GiftTask.INSTANCE, input)) {
+                if (!player.isCreative()) input.shrink(1);
                 return true;
             }
         }

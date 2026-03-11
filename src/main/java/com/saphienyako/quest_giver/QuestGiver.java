@@ -1,6 +1,8 @@
 package com.saphienyako.quest_giver;
 
 import com.mojang.logging.LogUtils;
+import com.saphienyako.quest_giver.data.QuestLineNameLoader;
+import com.saphienyako.quest_giver.data.SpecialTaskActionLoader;
 import com.saphienyako.quest_giver.entity.ModEntities;
 import com.saphienyako.quest_giver.entity.QuestVillagerEntity;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
@@ -66,7 +68,7 @@ public class QuestGiver
         TaskTypes.register(new ResourceLocation(MOD_ID,"biome"), BiomeTask.INSTANCE);
         TaskTypes.register(new ResourceLocation(MOD_ID,"structure"), StructureTask.INSTANCE);
         TaskTypes.register(new ResourceLocation(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
-        TaskTypes.register(new ResourceLocation(MOD_ID,"special"), SpecialTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID,"special_task"), SpecialTask.INSTANCE);
 
         RewardTypes.register(new ResourceLocation(MOD_ID, "item"), ItemReward.INSTANCE);
         RewardTypes.register(new ResourceLocation(MOD_ID, "command"), CommandReward.INSTANCE);
@@ -105,6 +107,8 @@ public class QuestGiver
     }
 
     public void reloadData(AddReloadListenerEvent event) {
+        event.addListener(new QuestLineNameLoader());
+        event.addListener(new SpecialTaskActionLoader());
         event.addListener(QuestManager.createReloadListener());
     }
 }

@@ -2,10 +2,10 @@
   "parent": "quest_giver:quest_03",
   "complete": {
     "description": {
-      "translate": "You have 2 cooked Beef! End of Quest Line."
+      "translate": "You have 2 cooked Beef in your inventory!"
     },
     "title": {
-      "translate": "Item Stack Test"
+      "translate": "Item Stack Example"
     }
   },
   "icon": "minecraft:cooked_beef",
@@ -14,7 +14,7 @@
       "translate": "Have a stack of 2 Cooked Beef in your inventory."
     },
     "title": {
-      "translate": "Item Stack Test"
+      "translate": "Item Stack Example"
     }
   },
   "tasks": [
@@ -23,6 +23,15 @@
       "id": "quest_giver:item_stack",
       "item": {
         "item": "minecraft:cooked_beef"
+      }
+    }
+  ],
+  "rewards": [
+    {
+      "id": "quest_giver:item",
+      "item": {
+        "count": 1,
+        "item": "minecraft:name_tag"
       }
     }
   ]

@@ -29,9 +29,9 @@ public class QuestData {
 
 
     @Nullable
-    private QuestLineName currentQuestLine;
+    private String currentQuestLine;
     @Nullable
-    private QuestLineName pendingQuestLine;
+    private String pendingQuestLine;
 
     public static QuestData get(ServerPlayer player) {
         // Capability should always be there.
@@ -49,12 +49,12 @@ public class QuestData {
         this.startNextQuests();
     }
 
-    public boolean canComplete(QuestLineName questLine) {
+    public boolean canComplete(String questLine) {
         return this.currentQuestLine == questLine;
     }
 
     @Nullable
-    public QuestDisplay initialize(QuestLineName questLine) {
+    public QuestDisplay initialize(String questLine) {
         if (this.currentQuestLine == null) {
             QuestLine quests = QuestManager.getQuests(questLine);
 
@@ -100,7 +100,7 @@ public class QuestData {
     }
 
     public boolean reset() {
-        QuestLineName oldQuestLineName = this.currentQuestLine;
+        String oldQuestLineName = this.currentQuestLine;
         this.currentQuestLine = null;
         this.pendingCompletion.clear();
         this.completedQuests.clear();
@@ -114,7 +114,7 @@ public class QuestData {
     }
 
     @Nullable
-    public QuestLineName getQuestName() {
+    public String getQuestName() {
         return this.currentQuestLine;
     }
 
@@ -247,7 +247,7 @@ public class QuestData {
         }
         if (this.player != null) {
             if (shouldNotify) {
-                this.player.displayClientMessage(Component.translatable("message.feywild.quest_completion"), true);
+                this.player.displayClientMessage(Component.translatable("message.quest_giver.quest_completion"), true);
             } else {
                 this.player.displayClientMessage(Component.literal(msgToDisplay), true);
             }
@@ -284,7 +284,7 @@ public class QuestData {
 
     public CompoundTag write() {
         CompoundTag nbt = new CompoundTag();
-        nbt.putString("QuestName", QuestLineName.optionId(this.currentQuestLine));
+        nbt.putString("QuestName", this.currentQuestLine == null ? "" : this.currentQuestLine);
         ListTag pending = new ListTag();
         for (ResourceLocation quest : this.pendingCompletion) {
             pending.add(StringTag.valueOf(quest.toString()));
@@ -304,7 +304,8 @@ public class QuestData {
     }
 
     public void read(CompoundTag nbt) {
-        this.currentQuestLine = QuestLineName.byOptionId(nbt.getString("QuestName"));
+        String name = nbt.getString("QuestName");
+        this.currentQuestLine = name.isEmpty() ? null : name;
         ListTag pending = nbt.getList("Pending", Tag.TAG_STRING);
         this.pendingCompletion.clear();
         for (int i = 0; i < pending.size(); i++) {
