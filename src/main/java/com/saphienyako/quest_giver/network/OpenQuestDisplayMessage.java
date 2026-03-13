@@ -2,7 +2,7 @@ package com.saphienyako.quest_giver.network;
 
 
 import com.saphienyako.quest_giver.quest.QuestDisplay;
-import com.saphienyako.quest_giver.quest.player.ClientQuests;
+import com.saphienyako.quest_giver.quest.data.ClientQuests;
 import com.saphienyako.quest_giver.screen.DisplayQuestScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;

@@ -1,4 +1,4 @@
-package com.saphienyako.quest_giver.quest.player;
+package com.saphienyako.quest_giver.quest.data;
 
 public class ClientQuests {
     

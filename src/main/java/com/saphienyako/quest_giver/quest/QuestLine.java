@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 public class QuestLine {
     //A QuestLine is a collection of Quest(s)
-    // TODO make multiple questlines available for a player
 
     public static final QuestLine EMPTY = new QuestLine(ImmutableMap.of());
 

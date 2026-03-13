@@ -1,4 +1,4 @@
-package com.saphienyako.quest_giver.quest.player;
+package com.saphienyako.quest_giver.quest.data;
 
 import com.google.common.collect.ImmutableList;
 import com.saphienyako.quest_giver.QuestGiver;

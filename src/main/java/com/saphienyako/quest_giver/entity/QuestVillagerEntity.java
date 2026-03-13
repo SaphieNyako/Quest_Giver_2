@@ -1,7 +1,7 @@
 package com.saphienyako.quest_giver.entity;
 
 import com.saphienyako.quest_giver.QuestGiverAPI;
-import com.saphienyako.quest_giver.quest.player.QuestData;
+import com.saphienyako.quest_giver.quest.data.QuestData;
 import com.saphienyako.quest_giver.quest.task.SpecialTask;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

@@ -4,8 +4,8 @@ import com.saphienyako.quest_giver.network.OpenQuestDisplayMessage;
 import com.saphienyako.quest_giver.network.OpenQuestSelectionMessage;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
-import com.saphienyako.quest_giver.quest.player.QuestData;
-import com.saphienyako.quest_giver.quest.player.QuestLineData;
+import com.saphienyako.quest_giver.quest.data.QuestData;
+import com.saphienyako.quest_giver.quest.data.QuestLineData;
 import com.saphienyako.quest_giver.quest.task.GiftTask;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import net.minecraft.network.chat.Component;
@@ -36,7 +36,7 @@ public class QuestGiverAPI {
         // If the questline already exists
         if (line != null) {
 
-            // 1️⃣ Complete pending quests
+            //Complete pending quests
             QuestDisplay completionDisplay = line.completePendingQuest();
 
             if (completionDisplay != null) {
@@ -45,7 +45,7 @@ public class QuestGiverAPI {
                 return;
             }
 
-            // 2️⃣ Show active quests
+            //Show active quests
             List<SelectableQuest> active = line.getActiveQuests();
 
             if (!active.isEmpty()) {
@@ -61,7 +61,7 @@ public class QuestGiverAPI {
             }
         }
 
-        // 3️⃣ Initialize the questline
+        //Initialize the questline
         QuestDisplay initDisplay = questData.initialize(questLineId);
 
         QuestGiver.LOGGER.info("Initiating Quest: {}", initDisplay);

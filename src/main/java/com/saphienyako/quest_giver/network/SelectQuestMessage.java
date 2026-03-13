@@ -1,10 +1,9 @@
 package com.saphienyako.quest_giver.network;
 
 
-import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
-import com.saphienyako.quest_giver.quest.player.QuestData;
-import com.saphienyako.quest_giver.quest.player.QuestLineData;
+import com.saphienyako.quest_giver.quest.data.QuestData;
+import com.saphienyako.quest_giver.quest.data.QuestLineData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

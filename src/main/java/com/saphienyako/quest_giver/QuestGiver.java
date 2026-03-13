@@ -2,12 +2,13 @@ package com.saphienyako.quest_giver;
 
 import com.mojang.logging.LogUtils;
 import com.saphienyako.quest_giver.data.QuestLineNameLoader;
+import com.saphienyako.quest_giver.data.QuestLinkDataLoader;
 import com.saphienyako.quest_giver.data.SpecialTaskActionLoader;
 import com.saphienyako.quest_giver.entity.ModEntities;
 import com.saphienyako.quest_giver.entity.QuestVillagerEntity;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.QuestManager;
-import com.saphienyako.quest_giver.quest.player.CapabilityQuests;
+import com.saphienyako.quest_giver.quest.data.CapabilityQuests;
 import com.saphienyako.quest_giver.quest.reward.CommandReward;
 import com.saphienyako.quest_giver.quest.reward.ItemReward;
 import com.saphienyako.quest_giver.quest.reward.RewardTypes;
@@ -110,5 +111,6 @@ public class QuestGiver
         event.addListener(new QuestLineNameLoader());
         event.addListener(new SpecialTaskActionLoader());
         event.addListener(QuestManager.createReloadListener());
+        event.addListener(new QuestLinkDataLoader());
     }
 }

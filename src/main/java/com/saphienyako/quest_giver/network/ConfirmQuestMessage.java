@@ -1,7 +1,7 @@
 package com.saphienyako.quest_giver.network;
 
 
-import com.saphienyako.quest_giver.quest.player.QuestData;
+import com.saphienyako.quest_giver.quest.data.QuestData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

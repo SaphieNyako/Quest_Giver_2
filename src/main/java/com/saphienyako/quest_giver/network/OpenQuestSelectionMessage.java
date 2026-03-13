@@ -1,7 +1,7 @@
 package com.saphienyako.quest_giver.network;
 
 
-import com.saphienyako.quest_giver.quest.player.ClientQuests;
+import com.saphienyako.quest_giver.quest.data.ClientQuests;
 import com.saphienyako.quest_giver.quest.util.PacketUtil;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import com.saphienyako.quest_giver.screen.SelectQuestScreen;

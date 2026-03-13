@@ -1,6 +1,8 @@
 package com.saphienyako.quest_giver;
 
-import com.saphienyako.quest_giver.quest.player.QuestData;
+import com.saphienyako.quest_giver.quest.QuestLinkManager;
+import com.saphienyako.quest_giver.quest.data.QuestData;
+import com.saphienyako.quest_giver.quest.data.QuestLinkData;
 import com.saphienyako.quest_giver.quest.task.*;
 import com.saphienyako.quest_giver.screen.DisplayQuestScreen;
 import com.saphienyako.quest_giver.screen.SelectQuestScreen;
@@ -83,31 +85,26 @@ public class EventListener {
     @SubscribeEvent
     public void entityInteract(PlayerInteractEvent.EntityInteract event) {
         if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
-            if(player.getMainHandItem() == ItemStack.EMPTY) {
+            if (player.getMainHandItem() == ItemStack.EMPTY) {
                 QuestData.get(player).checkComplete(AnimalPetTask.INSTANCE, event.getTarget());
             }
 
-            Entity target = event.getTarget();
+            Entity questNPC = event.getTarget();
 
-            // Example: Start quest when interacting with a wolf named "Wolfie"
-            if (target instanceof Wolf wolf && wolf.hasCustomName()) {
-
-                String name = wolf.getCustomName().getString();
-
-                if (name.equalsIgnoreCase("Wolfie")) {
-
-                    // Start the quest line with your helper
-                    // entityId = wolf.getId(), hand = event.getHand(), questLineId = the ID of your quest line
-                    QuestGiverAPI.interactQuest(player, wolf.getId(), wolf.getDisplayName(), event.getHand(), "wolf_quest");
-
-                }
+            // Try to see if this entity starts a quest line
+            QuestLinkData link = QuestLinkManager.getMatchingLink(questNPC);
+            if (link != null) {
+                QuestGiverAPI.interactQuest(
+                        player,
+                        questNPC.getId(),
+                        questNPC.getDisplayName(),
+                        event.getHand(),
+                        link.questLineId
+                );
+                player.swing(event.getHand(), true);
             }
 
         }
-
-        // Example: Start quest when interacting with a wolf named "Wolfie"
-
-
     }
 
     //TODO Tree Grow

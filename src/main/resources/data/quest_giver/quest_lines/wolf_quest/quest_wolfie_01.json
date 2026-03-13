@@ -1,0 +1,27 @@
+{
+  "parent": "quest_giver:root",
+  "complete": {
+    "description": {
+      "translate": "That was fun!"
+    },
+    "title": {
+      "translate": "Kill Example"
+    }
+  },
+  "icon": "minecraft:white_wool",
+  "start": {
+    "description": {
+      "translate": "Let's hunt some Sheep!"
+    },
+    "title": {
+      "translate": "Kill Example"
+    }
+  },
+  "tasks": [
+    {
+      "entity": "minecraft:sheep",
+      "id": "quest_giver:kill",
+      "times": 3
+    }
+  ]
+}
