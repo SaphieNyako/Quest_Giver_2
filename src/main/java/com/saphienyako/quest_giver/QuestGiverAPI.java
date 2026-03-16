@@ -40,7 +40,7 @@ public class QuestGiverAPI {
             QuestDisplay completionDisplay = line.completePendingQuest();
 
             if (completionDisplay != null) {
-                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId);
+                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId, "quest_giver");
                 player.swing(hand, true);
                 return;
             }
@@ -51,9 +51,9 @@ public class QuestGiverAPI {
             if (!active.isEmpty()) {
 
                 if (active.size() == 1) {
-                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId);
+                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, "quest_giver");
                 } else {
-                    sendQuestSelection(player, displayName, active, entityId, questLineId);
+                    sendQuestSelection(player, displayName, active, entityId, questLineId, "quest_giver");
                 }
 
                 player.swing(hand, true);
@@ -67,18 +67,78 @@ public class QuestGiverAPI {
         QuestGiver.LOGGER.info("Initiating Quest: {}", initDisplay);
 
         if (initDisplay != null) {
-            sendQuestDisplay(player, initDisplay, true, entityId, questLineId);
+            sendQuestDisplay(player, initDisplay, true, entityId, questLineId, "quest_giver");
             player.swing(hand, true);
         }
     }
 
-    private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId, String questLineId) {
-        QuestGiverNetwork.sendToPlayer(new OpenQuestDisplayMessage(display, isNew, entityId, questLineId), player);
+    /**
+     * Interact with a quest-giving entity.
+     * Optional give in a backgroundName of the costum background gui image.
+     * This should be placed in the quest_giver/textures/gui map.
+     * backgroundName + "_background_01.png"
+     * backgroundName + "_background_02.png"
+     * backgroundName + "_background_03.png"
+     * backgroundName + "_button.png"
+     * backgroundName + "_button_small.png"
+     * @param backgroundName          name of the background images
+     */
+
+    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, String backgroundName) {
+
+        QuestData questData = QuestData.get(player);
+
+        QuestLineData line = questData.getQuestLine(questLineId);
+
+        // If the questline already exists
+        if (line != null) {
+
+            //Complete pending quests
+            QuestDisplay completionDisplay = line.completePendingQuest();
+
+            if (completionDisplay != null) {
+                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId, backgroundName);
+                player.swing(hand, true);
+                return;
+            }
+
+            //Show active quests
+            List<SelectableQuest> active = line.getActiveQuests();
+
+            if (!active.isEmpty()) {
+
+                if (active.size() == 1) {
+                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, backgroundName);
+                } else {
+                    sendQuestSelection(player, displayName, active, entityId, questLineId, backgroundName);
+                }
+
+                player.swing(hand, true);
+                return;
+            }
+        }
+
+        //Initialize the questline
+        QuestDisplay initDisplay = questData.initialize(questLineId);
+
+        QuestGiver.LOGGER.info("Initiating Quest: {}", initDisplay);
+
+        if (initDisplay != null) {
+            sendQuestDisplay(player, initDisplay, true, entityId, questLineId, backgroundName);
+            player.swing(hand, true);
+        }
     }
 
-    private static void sendQuestSelection(ServerPlayer player, Component displayName, List<SelectableQuest> quests, int entityId, String questLineId) {
+
+
+
+    private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId, String questLineId, String backgroundName) {
+        QuestGiverNetwork.sendToPlayer(new OpenQuestDisplayMessage(display, isNew, entityId, questLineId, backgroundName), player);
+    }
+
+    private static void sendQuestSelection(ServerPlayer player, Component displayName, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
         QuestGiverNetwork.sendToPlayer(
-                new OpenQuestSelectionMessage(displayName, quests, entityId, questLineId), player);
+                new OpenQuestSelectionMessage(displayName, quests, entityId, questLineId, backgroundName), player);
     }
 
     /**

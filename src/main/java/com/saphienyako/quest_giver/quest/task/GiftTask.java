@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 
 public class GiftTask implements TaskType<Ingredient, ItemStack> {
 
+    //TODO GiftToSpecific Name or Entity Task
+
     public static final GiftTask INSTANCE = new GiftTask();
 
     private GiftTask() {}

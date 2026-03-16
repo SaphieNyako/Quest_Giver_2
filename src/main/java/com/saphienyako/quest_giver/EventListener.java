@@ -94,16 +94,26 @@ public class EventListener {
             // Try to see if this entity starts a quest line
             QuestLinkData link = QuestLinkManager.getMatchingLink(questNPC);
             if (link != null) {
-                QuestGiverAPI.interactQuest(
-                        player,
-                        questNPC.getId(),
-                        questNPC.getDisplayName(),
-                        event.getHand(),
-                        link.questLineId
-                );
+                if(link.backgroundName != null) {
+                    QuestGiverAPI.interactQuest(
+                            player,
+                            questNPC.getId(),
+                            questNPC.getDisplayName(),
+                            event.getHand(),
+                            link.questLineId,
+                            link.backgroundName
+                    );
+                } else {
+                    QuestGiverAPI.interactQuest(
+                            player,
+                            questNPC.getId(),
+                            questNPC.getDisplayName(),
+                            event.getHand(),
+                            link.questLineId
+                    );
+                }
                 player.swing(event.getHand(), true);
             }
-
         }
     }
 

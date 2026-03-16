@@ -26,23 +26,25 @@ public class DisplayQuestScreen extends Screen {
     private final Component title;
     private final AnimatedText text;
 
-    //TODO
-    //This determines how many chars should appear each tick when displaying the quest text, 1 being very slow - 5 being very fast.
-    private final int quest_text_speed = 3;
-
     private int left;
     private int top;
 
-    private String questLineId;
+    private final String questLineId;
 
-    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId, String questLineId) {
+    private final String backgroundName;
+
+    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId, String questLineId, String backgroundName) {
         super(display.title);
+        this.backgroundName = backgroundName;
         this.display = display;
         this.hasConfirmationButtons = hasConfirmationButtons;
         this.entityId = entityId;
         this.questLineId = questLineId;
 
         this.title = TextProcessor.INSTANCE.processLine(this.display.title);
+        //TODO
+        //This determines how many chars should appear each tick when displaying the quest text, 1 being very slow - 5 being very fast.
+        int quest_text_speed = 3;
         this.text = new AnimatedText(BackgroundWidget.WIDTH - (2 * BackgroundWidget.HORIZONTAL_PADDING), BackgroundWidget.HEIGHT - (2 * BackgroundWidget.VERTICAL_PADDING), quest_text_speed, TextProcessor.INSTANCE.process(this.display.description));
     }
 
@@ -53,7 +55,7 @@ public class DisplayQuestScreen extends Screen {
         this.left = (this.width / 2) - ((EntityWidget.WIDTH + BackgroundWidget.WIDTH) / 2);
         this.top = (this.height / 2) - (BackgroundWidget.HEIGHT / 2);
 
-        this.addRenderableOnly(new BackgroundWidget(this.left + EntityWidget.WIDTH, this.top));
+        this.addRenderableOnly(new BackgroundWidget(this.left + EntityWidget.WIDTH, this.top, this.backgroundName));
 
         if (this.entityId != -1) {
             Entity entity = Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.getEntity(this.entityId);
@@ -62,7 +64,7 @@ public class DisplayQuestScreen extends Screen {
             }
         }
 
-        this.addRenderableWidget(FancyButton.makeSmall(this.left + EntityWidget.WIDTH + 320, this.top + 58, Component.literal(this.text.isOnLastPage() ? "x" : ">>"), this.text::canContinue, button -> {
+        this.addRenderableWidget(FancyButton.makeSmall(this.backgroundName, this.left + EntityWidget.WIDTH + 320, this.top + 58, Component.literal(this.text.isOnLastPage() ? "x" : ">>"), this.text::canContinue, button -> {
             if (this.text.isOnLastPage()) {
                 this.onClose();
             } else {
@@ -72,11 +74,11 @@ public class DisplayQuestScreen extends Screen {
         }));
 
         if (this.hasConfirmationButtons) {
-            this.addRenderableWidget(FancyButton.makeLarge(this.left + EntityWidget.WIDTH + 80, this.top + 123, Component.translatable("message.quest_giver.quest_accept"), button -> {
+            this.addRenderableWidget(FancyButton.makeLarge(this.backgroundName,this.left + EntityWidget.WIDTH + 80, this.top + 123, Component.translatable("message.quest_giver.quest_accept"), button -> {
                 QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(this.questLineId,  true));
                 this.onClose();
             }));
-            this.addRenderableWidget(FancyButton.makeLarge(this.left + EntityWidget.WIDTH + 180, this.top + 123, Component.translatable("message.quest_giver.quest_decline"), button -> {
+            this.addRenderableWidget(FancyButton.makeLarge(this.backgroundName,this.left + EntityWidget.WIDTH + 180, this.top + 123, Component.translatable("message.quest_giver.quest_decline"), button -> {
                 QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(this.questLineId,false));
                 this.onClose();
             }));
@@ -101,7 +103,7 @@ public class DisplayQuestScreen extends Screen {
 
     private void drawTextLines(GuiGraphics graphics, int mouseX, int mouseY) {
         if (this.minecraft != null) {
-            graphics.drawString(this.minecraft.font, this.title, (this.width / 2) - (this.minecraft.font.width(this.title) / 2), this.top - this.minecraft.font.lineHeight - 6, 0xFFFFFF, false);
+            graphics.drawString(this.minecraft.font, this.title, (this.width / 2) - (this.minecraft.font.width(this.title) / 2) + 20, this.top - this.minecraft.font.lineHeight + 10, 0xFFFFFF, false);
             this.text.render(graphics, this.left + EntityWidget.WIDTH + BackgroundWidget.HORIZONTAL_PADDING, this.top + BackgroundWidget.VERTICAL_PADDING);
         }
     }

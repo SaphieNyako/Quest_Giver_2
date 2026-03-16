@@ -23,25 +23,25 @@ public class SelectQuestWidget extends Button {
 
     public static final int WIDTH = 210;
     public static final int HEIGHT = 65;
-
-    public static final ResourceLocation BACKGROUND_03 = new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/quest_giver_background_03.png");
-
     private final SelectableQuest quest;
     private final ItemStack iconStack;
 
     private String questLineId;
 
-    public SelectQuestWidget(int x, int y, SelectableQuest quest, String questLineId) {
+    private String backgroundName;
+
+    public SelectQuestWidget(int x, int y, SelectableQuest quest, String questLineId, String backgroundName) {
         super(x, y, WIDTH, HEIGHT, TextProcessor.INSTANCE.processLine(quest.display().title), b -> {}, l -> Component.empty());
         this.quest = quest;
         this.iconStack = new ItemStack(quest.icon());
         this.questLineId = questLineId;
+        this.backgroundName = backgroundName;
     }
 
     @Override
     public void onPress() {
         super.onPress();
-        QuestGiverNetwork.sendToServer(new SelectQuestMessage(this.questLineId, this.quest.id()));
+        QuestGiverNetwork.sendToServer(new SelectQuestMessage(this.questLineId, this.quest.id(), this.backgroundName));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SelectQuestWidget extends Button {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         
-        graphics.blit(BACKGROUND_03, this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
+        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName + "_background_03.png"), this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
         
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 10);

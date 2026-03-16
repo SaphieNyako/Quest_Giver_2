@@ -22,14 +22,17 @@ public class BackgroundWidget extends AbstractWidget {
     public static final ResourceLocation BACKGROUND_01 = new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/quest_giver_background_01.png");
     public static final ResourceLocation BACKGROUND_02 = new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/quest_giver_background_02.png");
 
-    public BackgroundWidget(int x, int y) {
+    public final String backgroundName;
+
+    public BackgroundWidget(int x, int y, String backgroundName) {
         super(x, y, WIDTH, HEIGHT, Component.empty());
+        this.backgroundName = backgroundName;
     }
 
     @Override
     public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blit(BACKGROUND_01, this.getX(), this.getY(), 0, 0, 240, HEIGHT);
-        graphics.blit(BACKGROUND_02, this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
+        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_01.png"), this.getX(), this.getY(), 0, 0, 240, HEIGHT);
+        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_02.png"), this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
     }
 
     @Override

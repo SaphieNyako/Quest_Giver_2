@@ -13,11 +13,6 @@ import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
 public class FancyButton extends Button {
-
-    //TODO GUI changeable
-    public static final ResourceLocation TEXTURE_LARGE = new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/quest_button.png");
-    public static final ResourceLocation TEXTURE_SMALL = new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/quest_button_small.png");
-
     private final ResourceLocation texture;
     private final BooleanSupplier enabled;
     private final int width;
@@ -43,19 +38,19 @@ public class FancyButton extends Button {
         }
     }
     
-    public static FancyButton makeLarge(int x, int y, Component message, OnPress onPress) {
-        return makeLarge(x, y, message, () -> true, onPress);
+    public static FancyButton makeLarge(String backgroundName,int x, int y, Component message, OnPress onPress) {
+        return makeLarge(backgroundName, x, y, message, () -> true, onPress);
     }
     
-    public static FancyButton makeLarge(int x, int y, Component message, BooleanSupplier enabled, OnPress onPress) {
-        return new FancyButton(TEXTURE_LARGE, x, y, 90, 22, message, enabled, onPress);
+    public static FancyButton makeLarge(String backgroundName, int x, int y, Component message, BooleanSupplier enabled, OnPress onPress) {
+        return new FancyButton(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName +  "_button.png"), x, y, 90, 22, message, enabled, onPress);
     }
 
-    public static FancyButton makeSmall(int x, int y, Component message, OnPress onPress) {
-        return makeSmall(x, y, message, () -> true, onPress);
+    public static FancyButton makeSmall(String backgroundName,int x, int y, Component message, OnPress onPress) {
+        return makeSmall(backgroundName,x, y, message, () -> true, onPress);
     }
     
-    public static FancyButton makeSmall(int x, int y, Component message, BooleanSupplier enabled, OnPress onPress) {
-        return new FancyButton(TEXTURE_SMALL, x, y, 22, 22, message, enabled, onPress);
+    public static FancyButton makeSmall(String backgroundName, int x, int y, Component message, BooleanSupplier enabled, OnPress onPress) {
+        return new FancyButton(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName +  "_button_small.png"), x, y, 22, 22, message, enabled, onPress);
     }
 }

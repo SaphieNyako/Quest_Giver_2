@@ -12,17 +12,19 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public record SelectQuestMessage(String questLineId, ResourceLocation quest) {
+public record SelectQuestMessage(String questLineId, ResourceLocation quest, String backgroundName) {
 
     public static void encode(SelectQuestMessage msg, FriendlyByteBuf buffer) {
         buffer.writeUtf(msg.questLineId());
         buffer.writeResourceLocation(msg.quest());
+        buffer.writeUtf(msg.backgroundName());
     }
 
     public static SelectQuestMessage decode(FriendlyByteBuf buffer) {
         String questLineId = buffer.readUtf();
         ResourceLocation quest = buffer.readResourceLocation();
-        return new SelectQuestMessage(questLineId, quest);
+        String backgroundName = buffer.readUtf();
+        return new SelectQuestMessage(questLineId, quest, backgroundName);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
@@ -38,7 +40,7 @@ public record SelectQuestMessage(String questLineId, ResourceLocation quest) {
 
                     if (display != null) {
                         QuestGiverNetwork.INSTANCE.reply(
-                                new OpenQuestDisplayMessage(display, false, -1, this.questLineId), context
+                                new OpenQuestDisplayMessage(display, false, -1, this.questLineId, this.backgroundName), context
                         );
                     }
                 }
