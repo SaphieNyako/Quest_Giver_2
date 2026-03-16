@@ -1,6 +1,9 @@
 package com.saphienyako.quest_giver.quest.task;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 import com.saphienyako.quest_giver.quest.util.IngredientStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -34,7 +37,16 @@ public class ItemStackTask implements TaskType<IngredientStack, ItemStack> {
 
     @Override
     public IngredientStack fromJson(JsonObject json) {
-        Ingredient ingredient = Ingredient.fromJson(json.get("item"));
+
+        JsonElement itemJson = json.get("item");
+
+        Ingredient ingredient;
+        try {
+            ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, itemJson).getOrThrow(JsonSyntaxException::new);
+        } catch (Exception e) {
+            throw new JsonSyntaxException("Failed to parse Ingredient from JSON", e);
+        }
+
         int amount = json.has("amount") ? json.get("amount").getAsInt() : 1;
         return new IngredientStack(ingredient, amount);
     }
@@ -42,7 +54,12 @@ public class ItemStackTask implements TaskType<IngredientStack, ItemStack> {
     @Override
     public JsonObject toJson(IngredientStack element) {
         JsonObject json = new JsonObject();
-        json.add("item", element.ingredient().toJson());
+
+        // Use the Ingredient codec to encode
+        JsonElement ingredientJson = Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, element.ingredient())
+                .getOrThrow(JsonSyntaxException::new);
+
+        json.add("item", ingredientJson);
         json.addProperty("amount", element.count());
         return json;
     }

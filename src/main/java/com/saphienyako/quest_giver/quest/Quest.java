@@ -6,9 +6,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
+
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -66,7 +67,7 @@ public class Quest {
         if (this.repeatable) {
             json.addProperty("repeatable", true);
         }
-        json.addProperty("icon", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.icon)).toString());
+        json.addProperty("icon", Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(this.icon)).toString());
         json.add("start", this.start.toJson());
         if (this.complete != null) {
             json.add("complete", this.complete.toJson());
@@ -93,16 +94,16 @@ public class Quest {
         ImmutableSet.Builder<ResourceLocation> parents = ImmutableSet.builder();
         if (json.has("parent") && json.get("parent").isJsonArray()) {
             for (JsonElement elem : json.get("parent").getAsJsonArray()) {
-                parents.add(new ResourceLocation(elem.getAsString()));
+                parents.add(ResourceLocation.parse(elem.getAsString()));
             }
         } else if (json.has("parent")) {
-            parents.add(new ResourceLocation(json.get("parent").getAsString()));
+            parents.add(ResourceLocation.parse(json.get("parent").getAsString()));
         }
         boolean repeatable = json.has("repeatable") && json.get("repeatable").getAsBoolean();
 
 
-        ResourceLocation itemId = new ResourceLocation(json.get("icon").getAsString());
-        Item icon = ForgeRegistries.ITEMS.getValue(itemId);
+        ResourceLocation itemId = ResourceLocation.parse(json.get("icon").getAsString());
+        Item icon = BuiltInRegistries.ITEM.get(itemId);
 
         if (icon == null) {
             throw new JsonParseException("Invalid item icon: " + itemId + " for quest " + id);

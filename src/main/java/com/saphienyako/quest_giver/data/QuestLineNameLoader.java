@@ -21,7 +21,7 @@ import java.util.*;
 public class QuestLineNameLoader extends SimplePreparableReloadListener<Set<String>> {
 
     private static final ResourceLocation FILE =
-            new ResourceLocation(QuestGiver.MOD_ID, "quest_line_names.json");
+            ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "quest_line_names.json");
 
     @Nonnull
     @Override

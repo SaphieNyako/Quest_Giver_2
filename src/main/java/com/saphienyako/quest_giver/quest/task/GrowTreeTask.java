@@ -2,12 +2,12 @@ package com.saphienyako.quest_giver.quest.task;
 
 
 import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 
 import javax.annotation.Nullable;
@@ -48,8 +48,8 @@ public class GrowTreeTask implements TaskType<Block, BlockState> {
 
     @Override
     public Block fromJson(JsonObject json) {
-        ResourceLocation id = new ResourceLocation(json.get("sapling").getAsString());
-        Block block = ForgeRegistries.BLOCKS.getValue(id);
+        ResourceLocation id = ResourceLocation.tryParse(json.get("sapling").getAsString());
+        Block block = BuiltInRegistries.BLOCK.get(id);
 
         if (block == null) {
             throw new IllegalStateException("Unknown sapling: " + id);
@@ -62,7 +62,7 @@ public class GrowTreeTask implements TaskType<Block, BlockState> {
     public JsonObject toJson(Block element) {
         JsonObject json = new JsonObject();
 
-        ResourceLocation id = ForgeRegistries.BLOCKS.getKey(element);
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(element);
         if (id == null) {
             throw new IllegalStateException("Block not registered: " + element);
         }

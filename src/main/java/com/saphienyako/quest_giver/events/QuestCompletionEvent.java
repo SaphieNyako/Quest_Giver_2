@@ -2,7 +2,8 @@ package com.saphienyako.quest_giver.events;
 
 import com.saphienyako.quest_giver.quest.Quest;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+
 
 public class QuestCompletionEvent extends Event {
 

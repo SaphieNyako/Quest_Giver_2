@@ -43,7 +43,7 @@ public class FancyButton extends Button {
     }
     
     public static FancyButton makeLarge(String backgroundName, int x, int y, Component message, BooleanSupplier enabled, OnPress onPress) {
-        return new FancyButton(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName +  "_button.png"), x, y, 90, 22, message, enabled, onPress);
+        return new FancyButton(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName +  "_button.png"), x, y, 90, 22, message, enabled, onPress);
     }
 
     public static FancyButton makeSmall(String backgroundName,int x, int y, Component message, OnPress onPress) {
@@ -51,6 +51,6 @@ public class FancyButton extends Button {
     }
     
     public static FancyButton makeSmall(String backgroundName, int x, int y, Component message, BooleanSupplier enabled, OnPress onPress) {
-        return new FancyButton(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName +  "_button_small.png"), x, y, 22, 22, message, enabled, onPress);
+        return new FancyButton(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName +  "_button_small.png"), x, y, 22, 22, message, enabled, onPress);
     }
 }

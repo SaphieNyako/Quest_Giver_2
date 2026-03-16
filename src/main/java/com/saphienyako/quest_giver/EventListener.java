@@ -17,21 +17,23 @@ import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.AnimalTameEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
 
 public class EventListener {
     
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void showGui(RenderGuiOverlayEvent.Pre event) {
+
+    public void showGui( RenderGuiLayerEvent.Pre event) {
         if (Minecraft.getInstance().screen instanceof DisplayQuestScreen || Minecraft.getInstance().screen instanceof SelectQuestScreen) {
             event.setCanceled(true);
         }
@@ -61,18 +63,19 @@ public class EventListener {
     }
 
     @SubscribeEvent
-    public void playerTick(TickEvent.PlayerTickEvent event) {
+    public void playerTick(PlayerTickEvent event) {
         // Only check one / second
-        if (event.player.tickCount % 20 == 0 && !event.player.level().isClientSide && event.player instanceof ServerPlayer player) {
-            QuestData quests = QuestData.get(player);
-            player.getInventory().items.forEach(stack -> quests.checkComplete(ItemStackTask.INSTANCE, stack));
+        Player player = event.getEntity();
+        if (player.tickCount % 20 == 0 && !player.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
+            QuestData quests = QuestData.get(serverPlayer);
+            serverPlayer.getInventory().items.forEach(stack -> quests.checkComplete(ItemStackTask.INSTANCE, stack));
             //Quest Check for Biome
-            player.level().getBiome(player.blockPosition()).is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.location()));
+            serverPlayer.level().getBiome(serverPlayer.blockPosition()).is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.location()));
             //Quest Check for Structure
-            if (player.serverLevel().structureManager().hasAnyStructureAt(player.blockPosition())) {
-                RegistryAccess access = player.level().registryAccess();
+            if (serverPlayer.serverLevel().structureManager().hasAnyStructureAt(serverPlayer.blockPosition())) {
+                RegistryAccess access = serverPlayer.level().registryAccess();
                 Registry<Structure> structureRegistry = access.registryOrThrow(Registries.STRUCTURE);
-                player.serverLevel().structureManager().getAllStructuresAt(player.blockPosition()).forEach((structure, set) -> {
+                serverPlayer.serverLevel().structureManager().getAllStructuresAt(serverPlayer.blockPosition()).forEach((structure, set) -> {
                     ResourceLocation structureId = structureRegistry.getKey(structure);
                     if (structureId != null) {
                         quests.checkComplete(StructureTask.INSTANCE, structureId);

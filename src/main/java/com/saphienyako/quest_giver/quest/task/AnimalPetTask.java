@@ -1,14 +1,15 @@
 package com.saphienyako.quest_giver.quest.task;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
+
 
 public class AnimalPetTask extends RegistryTaskType<EntityType<?>, Entity> {
-    
+
     public static final AnimalPetTask INSTANCE = new AnimalPetTask();
 
     private AnimalPetTask() {
@@ -16,8 +17,8 @@ public class AnimalPetTask extends RegistryTaskType<EntityType<?>, Entity> {
     }
 
     @Override
-    public IForgeRegistry<EntityType<?>> registry() {
-        return ForgeRegistries.ENTITY_TYPES;
+    public Registry<EntityType<?>> registry() {
+        return BuiltInRegistries.ENTITY_TYPE;
     }
 
     @Override
@@ -27,6 +28,6 @@ public class AnimalPetTask extends RegistryTaskType<EntityType<?>, Entity> {
 
     @Override
     public boolean checkCompleted(ServerPlayer player, ResourceKey<EntityType<?>> element, Entity match) {
-        return element.location().equals(ForgeRegistries.ENTITY_TYPES.getKey(match.getType()));
+        return element.location().equals(BuiltInRegistries.ENTITY_TYPE.getKey(match.getType()));
     }
 }

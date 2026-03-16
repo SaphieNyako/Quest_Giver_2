@@ -1,6 +1,9 @@
 package com.saphienyako.quest_giver.quest.task;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -33,13 +36,19 @@ public class GiftTask implements TaskType<Ingredient, ItemStack> {
 
     @Override
     public Ingredient fromJson(JsonObject json) {
-        return Ingredient.fromJson(json.get("item"));
+        JsonElement itemJson = json.get("item");
+        return Ingredient.CODEC
+                .parse(JsonOps.INSTANCE, itemJson)
+                .getOrThrow(msg -> new JsonSyntaxException("Failed to parse Ingredient: " + msg));
     }
 
     @Override
     public JsonObject toJson(Ingredient element) {
         JsonObject json = new JsonObject();
-        json.add("item", element.toJson());
+        JsonElement ingredientJson = Ingredient.CODEC
+                .encodeStart(JsonOps.INSTANCE, element)
+                .getOrThrow(msg -> new JsonSyntaxException("Failed to encode Ingredient: " + msg));
+        json.add("item", ingredientJson);
         return json;
     }
 

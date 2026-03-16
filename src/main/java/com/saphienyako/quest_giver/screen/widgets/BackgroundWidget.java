@@ -17,11 +17,6 @@ public class BackgroundWidget extends AbstractWidget {
     public static final int HORIZONTAL_PADDING = 35;
     public static final int VERTICAL_PADDING = 25;
 
-
-    //TODO make this one Background, replaceable
-    public static final ResourceLocation BACKGROUND_01 = new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/quest_giver_background_01.png");
-    public static final ResourceLocation BACKGROUND_02 = new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/quest_giver_background_02.png");
-
     public final String backgroundName;
 
     public BackgroundWidget(int x, int y, String backgroundName) {
@@ -31,8 +26,8 @@ public class BackgroundWidget extends AbstractWidget {
 
     @Override
     public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_01.png"), this.getX(), this.getY(), 0, 0, 240, HEIGHT);
-        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_02.png"), this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
+        graphics.blit(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_01.png"), this.getX(), this.getY(), 0, 0, 240, HEIGHT);
+        graphics.blit(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_02.png"), this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
     }
 
     @Override

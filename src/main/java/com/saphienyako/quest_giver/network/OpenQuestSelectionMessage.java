@@ -1,38 +1,57 @@
 package com.saphienyako.quest_giver.network;
 
 
+import com.saphienyako.quest_giver.QuestGiver;
+import com.saphienyako.quest_giver.quest.QuestDisplay;
 import com.saphienyako.quest_giver.quest.data.ClientQuests;
 import com.saphienyako.quest_giver.quest.util.PacketUtil;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import com.saphienyako.quest_giver.screen.SelectQuestScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 
 import java.util.List;
 import java.util.function.Supplier;
 
-public record OpenQuestSelectionMessage(Component title, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
+public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) implements CustomPacketPayload {
 
-    public static void encode(OpenQuestSelectionMessage msg, FriendlyByteBuf buffer) {
-        buffer.writeComponent(msg.title());
-        PacketUtil.writeList(msg.quests(), buffer, (b, q) -> q.toNetwork(b));
-        buffer.writeInt(msg.entityId());
-        buffer.writeUtf(msg.questLineId());
-        buffer.writeUtf(msg.backgroundName());
+    public static final CustomPacketPayload.Type<OpenQuestSelectionMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "open_quest_selection"));
+
+    public static final StreamCodec<FriendlyByteBuf, OpenQuestSelectionMessage> STREAM_CODEC =
+            StreamCodec.of(OpenQuestSelectionMessage::encode, OpenQuestSelectionMessage::decode);
+
+    private static void encode(FriendlyByteBuf buf, OpenQuestSelectionMessage msg) {
+        PacketUtil.writeList(msg.quests(), buf, (b, q) -> q.toNetwork(b));
+        buf.writeInt(msg.entityId());
+        buf.writeUtf(msg.questLineId());
+        buf.writeUtf(msg.backgroundName());
     }
 
-    public static OpenQuestSelectionMessage decode(FriendlyByteBuf buffer) {
-        Component title = buffer.readComponent();
-        List<SelectableQuest> quests = PacketUtil.readList(buffer, SelectableQuest::fromNetwork);
-        int id = buffer.readInt();
-        return new OpenQuestSelectionMessage(title, quests, id, buffer.readUtf(), buffer.readUtf());
+    private static OpenQuestSelectionMessage decode(FriendlyByteBuf buf) {
+        List<SelectableQuest> quests = PacketUtil.readList(buf, SelectableQuest::fromNetwork);
+        int id = buf.readInt();
+        String questLineId = buf.readUtf();
+        String backgroundName = buf.readUtf();
+        return new OpenQuestSelectionMessage(quests, id, questLineId, backgroundName);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        if (this.entityId() != -1) ClientQuests.lastTalkedEntityId = this.entityId();
-        Minecraft.getInstance().setScreen(new SelectQuestScreen(this.title(), this.quests(), ClientQuests.lastTalkedEntityId, this.questLineId, this.backgroundName));
+    public static void handle(OpenQuestSelectionMessage msg, IPayloadContext context) {
+        if (msg.entityId() != -1) ClientQuests.lastTalkedEntityId = msg.entityId();
+        Minecraft.getInstance().setScreen(new SelectQuestScreen(msg.quests(), ClientQuests.lastTalkedEntityId, msg.questLineId, msg.backgroundName));
+
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

@@ -36,7 +36,7 @@ public class QuestReward {
 
     public static QuestReward fromJson(JsonObject json) {
         //noinspection unchecked
-        RewardType<Object> reward = (RewardType<Object>) RewardTypes.getType(new ResourceLocation(json.get("id").getAsString()));
+        RewardType<Object> reward = (RewardType<Object>) RewardTypes.getType(ResourceLocation.tryParse(json.get("id").getAsString()));
         Object element = reward.fromJson(json);
         return new QuestReward(reward, element);
     }

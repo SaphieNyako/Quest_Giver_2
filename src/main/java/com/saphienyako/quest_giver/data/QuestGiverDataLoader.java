@@ -42,7 +42,7 @@ public class QuestGiverDataLoader {
             String path = fileLocation.getPath();
             path = path.substring(basePath.length() + 1, path.length() - ".json".length());
 
-            ResourceLocation id = new ResourceLocation(fileLocation.getNamespace(), path);
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(fileLocation.getNamespace(), path);
 
             try (Reader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
 

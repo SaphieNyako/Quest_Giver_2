@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -53,7 +54,7 @@ public class QuestGiverAPI {
                 if (active.size() == 1) {
                     sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, "quest_giver");
                 } else {
-                    sendQuestSelection(player, displayName, active, entityId, questLineId, "quest_giver");
+                    sendQuestSelection(player, active, entityId, questLineId, "quest_giver");
                 }
 
                 player.swing(hand, true);
@@ -110,7 +111,7 @@ public class QuestGiverAPI {
                 if (active.size() == 1) {
                     sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, backgroundName);
                 } else {
-                    sendQuestSelection(player, displayName, active, entityId, questLineId, backgroundName);
+                    sendQuestSelection(player, active, entityId, questLineId, backgroundName);
                 }
 
                 player.swing(hand, true);
@@ -133,12 +134,12 @@ public class QuestGiverAPI {
 
 
     private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId, String questLineId, String backgroundName) {
-        QuestGiverNetwork.sendToPlayer(new OpenQuestDisplayMessage(display, isNew, entityId, questLineId, backgroundName), player);
+        PacketDistributor.sendToPlayer(player,new OpenQuestDisplayMessage(display, isNew, entityId, questLineId, backgroundName));
     }
 
-    private static void sendQuestSelection(ServerPlayer player, Component displayName, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
-        QuestGiverNetwork.sendToPlayer(
-                new OpenQuestSelectionMessage(displayName, quests, entityId, questLineId, backgroundName), player);
+    private static void sendQuestSelection(ServerPlayer player, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
+        PacketDistributor.sendToPlayer(player,
+                new OpenQuestSelectionMessage(quests, entityId, questLineId, backgroundName));
     }
 
     /**

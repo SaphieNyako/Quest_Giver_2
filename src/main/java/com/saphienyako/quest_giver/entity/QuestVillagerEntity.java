@@ -18,8 +18,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -31,9 +31,9 @@ public class QuestVillagerEntity extends Villager {
     }
 
     public static boolean canSpawn(EntityType<? extends QuestVillagerEntity> entityType, LevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
-        return Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.DIRT).contains(level.getBlockState(pos.below()).getBlock()) || Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.SAND).contains(level.getBlockState(pos.below()).getBlock());
+        BlockState state = level.getBlockState(pos.below());
+        return state.is(BlockTags.DIRT) || state.is(BlockTags.SAND);
     }
-
     @Nonnull
     @Override
     public InteractionResult interactAt(@Nonnull Player player, @Nonnull Vec3 vec, @Nonnull InteractionHand hand) {

@@ -21,7 +21,7 @@ import java.util.List;
 
 public class QuestLinkDataLoader extends SimplePreparableReloadListener<List<QuestLinkData>> {
 
-    private static final ResourceLocation FILE = new ResourceLocation(QuestGiver.MOD_ID, "quest_line_links.json");
+    private static final ResourceLocation FILE =  ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "quest_line_links.json");
 
     @Nonnull
     @Override

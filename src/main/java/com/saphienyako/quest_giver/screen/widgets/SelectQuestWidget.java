@@ -12,12 +12,12 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
-
 @OnlyIn(Dist.CLIENT)
 public class SelectQuestWidget extends Button {
 
@@ -41,7 +41,7 @@ public class SelectQuestWidget extends Button {
     @Override
     public void onPress() {
         super.onPress();
-        QuestGiverNetwork.sendToServer(new SelectQuestMessage(this.questLineId, this.quest.id(), this.backgroundName));
+        PacketDistributor.sendToServer(new SelectQuestMessage(this.questLineId, this.quest.id(), this.backgroundName));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SelectQuestWidget extends Button {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         
-        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName + "_background_03.png"), this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
+        graphics.blit(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName + "_background_03.png"), this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
         
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 10);

@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 
@@ -75,11 +76,11 @@ public class DisplayQuestScreen extends Screen {
 
         if (this.hasConfirmationButtons) {
             this.addRenderableWidget(FancyButton.makeLarge(this.backgroundName,this.left + EntityWidget.WIDTH + 80, this.top + 123, Component.translatable("message.quest_giver.quest_accept"), button -> {
-                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(this.questLineId,  true));
+                PacketDistributor.sendToServer(new ConfirmQuestMessage(this.questLineId,  true));
                 this.onClose();
             }));
             this.addRenderableWidget(FancyButton.makeLarge(this.backgroundName,this.left + EntityWidget.WIDTH + 180, this.top + 123, Component.translatable("message.quest_giver.quest_decline"), button -> {
-                QuestGiverNetwork.sendToServer(new ConfirmQuestMessage(this.questLineId,false));
+                PacketDistributor.sendToServer(new ConfirmQuestMessage(this.questLineId,false));
                 this.onClose();
             }));
         }
@@ -93,7 +94,7 @@ public class DisplayQuestScreen extends Screen {
     @Override
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         graphics.pose().pushPose();
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().translate(0, 0, 20);
         super.render(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().translate(0, 0, 20);

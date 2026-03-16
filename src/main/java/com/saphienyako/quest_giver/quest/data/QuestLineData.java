@@ -12,7 +12,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -136,7 +136,7 @@ public class QuestLineData {
                 for (QuestReward reward : quest.rewards) {
                     reward.grantReward(player);
                 }
-                MinecraftForge.EVENT_BUS.post(new QuestCompletionEvent(this.player, quest));
+                NeoForge.EVENT_BUS.post(new QuestCompletionEvent(this.player, quest));
                 return display;
             } else {
                 return null;

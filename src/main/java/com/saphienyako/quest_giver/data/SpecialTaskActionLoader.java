@@ -24,7 +24,7 @@ import java.util.Set;
 public class SpecialTaskActionLoader extends SimplePreparableReloadListener<Set<String>> {
 
     private static final ResourceLocation FILE =
-            new ResourceLocation(QuestGiver.MOD_ID, "special_task_actions.json");
+            ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "special_task_actions.json");
 
     @Nonnull
     @Override

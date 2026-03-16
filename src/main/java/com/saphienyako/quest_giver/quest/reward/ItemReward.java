@@ -34,7 +34,7 @@ public class ItemReward implements RewardType<ItemStack> {
     @Override
     public JsonObject toJson(ItemStack element) {
         JsonObject json = new JsonObject();
-        json.add("item", ItemStackHelper.toJson(element, true));
+        json.add("item", ItemStackHelper.toJson(element));
         return json;
     }
 }

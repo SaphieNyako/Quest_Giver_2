@@ -27,8 +27,8 @@ public class SelectQuestScreen extends Screen {
 
     private final String backgroundName;
     
-    public SelectQuestScreen(Component name, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
-        super(name);
+    public SelectQuestScreen(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
+        super(Component.empty());
         this.quests = ImmutableList.copyOf(quests);
         this.entityId = entityId;
         this.questLineId = questLineId;
@@ -57,7 +57,7 @@ public class SelectQuestScreen extends Screen {
     @Override
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         graphics.pose().pushPose();
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().translate(0, 0, 20);
         super.render(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().translate(0, 0, 20);

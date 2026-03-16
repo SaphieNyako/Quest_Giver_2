@@ -1,6 +1,9 @@
 package com.saphienyako.quest_giver.quest.util;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -28,18 +31,25 @@ public record IngredientStack(Ingredient ingredient, int count) implements Predi
         return count <= 0 || ingredient.isEmpty();
     }
 
+    public static IngredientStack fromJson(JsonObject json) {
+        JsonElement elem = json.get("item");
+        Ingredient ingredient = elem == null
+                ? Ingredient.EMPTY
+                : net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(true)
+                .parse(JsonOps.INSTANCE, elem)
+                .getOrThrow(JsonSyntaxException::new);
+        int count = json.has("amount") ? json.get("amount").getAsInt() : 1;
+        return new IngredientStack(ingredient, count);
+    }
+
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        json.add("item", ingredient.toJson());
+        json.add("item", net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(true)
+                .encodeStart(JsonOps.INSTANCE, ingredient)
+                .getOrThrow(JsonSyntaxException::new));
         if (count != 1) {
             json.addProperty("amount", count);
         }
         return json;
-    }
-
-    public static IngredientStack fromJson(JsonObject json) {
-        Ingredient ingredient = Ingredient.fromJson(json.get("item"));
-        int count = json.has("amount") ? json.get("amount").getAsInt() : 1;
-        return new IngredientStack(ingredient, count);
     }
 }

@@ -81,7 +81,7 @@ public class QuestTask {
 
     public static QuestTask fromJson(JsonObject json) {
         //noinspection unchecked
-        TaskType<Object, Object> task = (TaskType<Object, Object>) TaskTypes.getType(new ResourceLocation(json.get("id").getAsString()));
+        TaskType<Object, Object> task = (TaskType<Object, Object>) TaskTypes.getType(ResourceLocation.tryParse(json.get("id").getAsString()));
         Object element = task.fromJson(json);
         int times = json.has("times") ? json.get("times").getAsInt() : 1;
         return new QuestTask(task, element, times);

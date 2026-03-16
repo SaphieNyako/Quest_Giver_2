@@ -26,7 +26,7 @@ public class QuestLinkData {
     public static QuestLinkData fromJson(JsonElement element) {
         JsonObject json = element.getAsJsonObject();
         String questLineId = json.get("quest_line_id").getAsString();
-        ResourceLocation entityId = new ResourceLocation(json.get("entity_id").getAsString());
+        ResourceLocation entityId = ResourceLocation.tryParse(json.get("entity_id").getAsString());
         String name = json.has("name") ? json.get("name").getAsString() : null;
         String backgroundName = json.has("background_name") ? json.get("background_name").getAsString() : null;
         return new QuestLinkData(questLineId, entityId, name, backgroundName);

@@ -25,14 +25,23 @@ public class EntityWidget extends AbstractWidget {
     //TODO
     @Override
     public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        double scale = ((this.height) / this.entity.getType().getHeight());
+        double scale = ((double) this.height / this.entity.getType().getHeight());
+
+        int x1 = this.getX();
+        int y1 = this.getY();
+        int x2 = x1 + (this.width * 2);
+        int y2 = y1 + this.height + 30 + (int) (scale);
+
+        float yOffset = 0f;
+
         InventoryScreen.renderEntityInInventoryFollowsMouse(
                 graphics,
-                this.getX() + (this.width / 2),
-                this.getY() + this.height,
+                x1, y1,
+                x2, y2,
                 (int) scale,
-                -(mouseX - this.getX() - (this.width / 2f)),
-                -(mouseY - this.getY() - (this.height / 2f)),
+                yOffset,
+                mouseX,
+                mouseY,
                 this.entity
         );
     }
