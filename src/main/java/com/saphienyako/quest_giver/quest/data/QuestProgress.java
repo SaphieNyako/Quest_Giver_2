@@ -1,5 +1,7 @@
 package com.saphienyako.quest_giver.quest.data;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.saphienyako.quest_giver.quest.Quest;
 import com.saphienyako.quest_giver.quest.QuestLine;
 import com.saphienyako.quest_giver.quest.task.TaskType;
@@ -66,23 +68,16 @@ public class QuestProgress {
         }
     }
 
-    public CompoundTag write() {
-        CompoundTag nbt = new CompoundTag();
-        for (Map.Entry<Integer, Integer> entry : this.taskProgress.entrySet()) {
-            nbt.putInt(Integer.toString(entry.getKey()), entry.getValue());
-        }
-        return nbt;
-    }
+    public static final Codec<QuestProgress> CODEC =
+            RecordCodecBuilder.create(instance -> instance.group(
+                    ResourceLocation.CODEC.fieldOf("quest").forGetter(p -> p.quest),
+                    Codec.unboundedMap(Codec.INT, Codec.INT)
+                            .fieldOf("progress")
+                            .forGetter(p -> p.taskProgress)
+            ).apply(instance, (quest, progress) -> {
 
-    public void read(CompoundTag nbt) {
-        this.taskProgress.clear();
-        for (String key : nbt.getAllKeys()) {
-            try {
-                int task = Integer.parseInt(key);
-                this.taskProgress.put(task, nbt.getInt(key));
-            } catch (NumberFormatException e) {
-                //
-            }
-        }
-    }
+                QuestProgress p = new QuestProgress(quest);
+                p.taskProgress.putAll(progress);
+                return p;
+            }));
 }

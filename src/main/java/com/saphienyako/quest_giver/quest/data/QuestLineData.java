@@ -1,6 +1,8 @@
 package com.saphienyako.quest_giver.quest.data;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.saphienyako.quest_giver.events.QuestCompletionEvent;
 import com.saphienyako.quest_giver.quest.*;
 import com.saphienyako.quest_giver.quest.task.TaskType;
@@ -252,50 +254,23 @@ public class QuestLineData {
         }
     }
 
-    public CompoundTag write() {
-        CompoundTag nbt = new CompoundTag();
-        ListTag pending = new ListTag();
-        for (ResourceLocation quest : this.pendingCompletion) {
-            pending.add(StringTag.valueOf(quest.toString()));
-        }
-        nbt.put("Pending", pending);
-        ListTag completed = new ListTag();
-        for (ResourceLocation quest : this.completedQuests) {
-            completed.add(StringTag.valueOf(quest.toString()));
-        }
-        nbt.put("Completed", completed);
-        CompoundTag active = new CompoundTag();
-        for (Map.Entry<ResourceLocation, QuestProgress> entry : this.activeQuests.entrySet()) {
-            active.put(entry.getKey().toString(), entry.getValue().write());
-        }
-        nbt.put("Active", active);
-        return nbt;
-    }
+    public static final Codec<QuestLineData> CODEC =
+            RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.STRING.fieldOf("questLineId").forGetter(d -> d.questLineId),
+                    ResourceLocation.CODEC.listOf().fieldOf("pending").forGetter(d -> d.pendingCompletion),
+                    ResourceLocation.CODEC.listOf().fieldOf("completed").forGetter(d -> List.copyOf(d.completedQuests)),
+                    Codec.unboundedMap(ResourceLocation.CODEC, QuestProgress.CODEC)
+                            .fieldOf("active")
+                            .forGetter(d -> d.activeQuests)
+            ).apply(instance, (id, pending, completed, active) -> {
 
-    public void read(CompoundTag nbt) {
+                QuestLineData data = new QuestLineData(id);
 
-        ListTag pending = nbt.getList("Pending", Tag.TAG_STRING);
-        this.pendingCompletion.clear();
-        for (int i = 0; i < pending.size(); i++) {
-            ResourceLocation id = ResourceLocation.tryParse(pending.getString(i));
-            if (id != null) this.pendingCompletion.add(id);
-        }
-        ListTag completed = nbt.getList("Completed", Tag.TAG_STRING);
-        this.completedQuests.clear();
-        for (int i = 0; i < completed.size(); i++) {
-            ResourceLocation id = ResourceLocation.tryParse(completed.getString(i));
-            if (id != null) this.completedQuests.add(id);
-        }
-        CompoundTag active = nbt.getCompound("Active");
-        this.activeQuests.clear();
-        for (String key : active.getAllKeys()) {
-            ResourceLocation id = ResourceLocation.tryParse(key);
-            if (id != null) {
-                QuestProgress progress = new QuestProgress(id);
-                progress.read(active.getCompound(key));
-                this.activeQuests.put(id, progress);
-            }
-        }
-    }
+                data.pendingCompletion.addAll(pending);
+                data.completedQuests.addAll(completed);
+                data.activeQuests.putAll(active);
+
+                return data;
+            }));
 
 }

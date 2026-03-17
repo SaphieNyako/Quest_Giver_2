@@ -1,6 +1,8 @@
 package com.saphienyako.quest_giver.quest.data;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.saphienyako.quest_giver.ModAttachments;
 import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.quest.Quest;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
@@ -23,10 +25,7 @@ public class QuestData {
     private ServerPlayer player;
 
     public static QuestData get(ServerPlayer player) {
-        return player.getCapability(CapabilityQuests.QUESTS).orElseGet(() -> {
-            QuestGiver.LOGGER.debug("Quest Data capability not present on player: {}", player);
-            return new QuestData();
-        });
+        return player.getData(ModAttachments.QUESTS);
     }
 
     public void attach(ServerPlayer player) {
@@ -113,33 +112,11 @@ public class QuestData {
         return list.build();
     }
 
-    // NBT SAVE
-    public CompoundTag write() {
-
-        CompoundTag tag = new CompoundTag();
-
-        for (Map.Entry<String, QuestLineData> entry : questLines.entrySet()) {
-            tag.put(entry.getKey(), entry.getValue().write());
-        }
-
-        return tag;
-    }
-
-    public void read(CompoundTag tag) {
-
-        questLines.clear();
-
-        for (String id : tag.getAllKeys()) {
-
-            QuestLineData data = new QuestLineData(id);
-
-            data.read(tag.getCompound(id));
-
-            if (player != null) {
-                data.attach(player);
-            }
-
-            questLines.put(id, data);
-        }
-    }
+    public static final Codec<QuestData> CODEC =
+            Codec.unboundedMap(Codec.STRING, QuestLineData.CODEC)
+                    .xmap(map -> {
+                        QuestData data = new QuestData();
+                        data.questLines.putAll(map);
+                        return data;
+                    }, data -> data.questLines);
 }

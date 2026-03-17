@@ -47,10 +47,16 @@ public class EventListener {
     }
 
     @SubscribeEvent
+    public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            QuestData.get(player).attach(player);
+        }
+    }
+
+    @SubscribeEvent
     public void playerKill(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayer player) {
-            QuestData quests = QuestData.get(player);
-            quests.checkComplete(KillTask.INSTANCE, event.getEntity());
+            QuestData.get(player).checkComplete(KillTask.INSTANCE, event.getEntity());
         }
     }
 
@@ -63,24 +69,35 @@ public class EventListener {
     }
 
     @SubscribeEvent
-    public void playerTick(PlayerTickEvent event) {
-        // Only check one / second
+    public void playerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
+
         if (player.tickCount % 20 == 0 && !player.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
+
             QuestData quests = QuestData.get(serverPlayer);
-            serverPlayer.getInventory().items.forEach(stack -> quests.checkComplete(ItemStackTask.INSTANCE, stack));
-            //Quest Check for Biome
-            serverPlayer.level().getBiome(serverPlayer.blockPosition()).is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.location()));
-            //Quest Check for Structure
+
+            serverPlayer.getInventory().items.forEach(stack ->
+                    quests.checkComplete(ItemStackTask.INSTANCE, stack));
+
+            serverPlayer.level().getBiome(serverPlayer.blockPosition())
+                    .is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.location()));
+
             if (serverPlayer.serverLevel().structureManager().hasAnyStructureAt(serverPlayer.blockPosition())) {
+
                 RegistryAccess access = serverPlayer.level().registryAccess();
                 Registry<Structure> structureRegistry = access.registryOrThrow(Registries.STRUCTURE);
-                serverPlayer.serverLevel().structureManager().getAllStructuresAt(serverPlayer.blockPosition()).forEach((structure, set) -> {
-                    ResourceLocation structureId = structureRegistry.getKey(structure);
-                    if (structureId != null) {
-                        quests.checkComplete(StructureTask.INSTANCE, structureId);
-                    }
-                });
+
+                serverPlayer.serverLevel()
+                        .structureManager()
+                        .getAllStructuresAt(serverPlayer.blockPosition())
+                        .forEach((structure, set) -> {
+
+                            ResourceLocation structureId = structureRegistry.getKey(structure);
+
+                            if (structureId != null) {
+                                quests.checkComplete(StructureTask.INSTANCE, structureId);
+                            }
+                        });
             }
         }
     }

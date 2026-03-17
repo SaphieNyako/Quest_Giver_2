@@ -8,17 +8,15 @@ import com.saphienyako.quest_giver.entity.ModEntities;
 import com.saphienyako.quest_giver.entity.QuestVillagerEntity;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.QuestManager;
-import com.saphienyako.quest_giver.quest.data.CapabilityQuests;
 import com.saphienyako.quest_giver.quest.reward.CommandReward;
 import com.saphienyako.quest_giver.quest.reward.ItemReward;
 import com.saphienyako.quest_giver.quest.reward.RewardTypes;
 import com.saphienyako.quest_giver.quest.task.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SpawnPlacementTypes;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import net.neoforged.api.distmarker.Dist;
@@ -56,8 +54,9 @@ public class QuestGiver
         //Datapack for Quests
         NeoForge.EVENT_BUS.addListener(this::reloadData);
         //Player Capabilities
-        NeoForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityQuests::attachPlayerCaps);
-        NeoForge.EVENT_BUS.addListener(CapabilityQuests::playerCopy);
+        ModAttachments.register(modEventBus);
+       // NeoForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityQuests::attachPlayerCaps);
+      //  NeoForge.EVENT_BUS.addListener(CapabilityQuests::playerCopy);
 
         NeoForge.EVENT_BUS.register(new EventListener());
 
@@ -88,22 +87,8 @@ public class QuestGiver
 
     }
 
-    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event) {
-            EntityRenderers.register(ModEntities.QUEST_VILLAGER.get(), VillagerRenderer::new);
-        }
-    }
-
     private void entityAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.QUEST_VILLAGER.get(), QuestVillagerEntity.createAttributes().build());
-
-    }
-
-    @SubscribeEvent
-    private static void spawnPlacement(RegisterSpawnPlacementsEvent event) {
-        event.register(ModEntities.QUEST_VILLAGER.get(),  SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, QuestVillagerEntity::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     public void reloadData(AddReloadListenerEvent event) {
@@ -111,5 +96,18 @@ public class QuestGiver
         event.addListener(new SpecialTaskActionLoader());
         event.addListener(QuestManager.createReloadListener());
         event.addListener(new QuestLinkDataLoader());
+    }
+
+    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            EntityRenderers.register(ModEntities.QUEST_VILLAGER.get(), VillagerRenderer::new);
+        }
+
+        @SubscribeEvent
+        private static void spawnPlacement(RegisterSpawnPlacementsEvent event) {
+            event.register(ModEntities.QUEST_VILLAGER.get(),  SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, QuestVillagerEntity::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        }
     }
 }

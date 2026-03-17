@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmationButtons, int entityId, String questLineId, String backgroundName) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<OpenQuestDisplayMessage> TYPE =
-            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "confirm_quest"));
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "open_quest_display"));
 
     public static final StreamCodec<FriendlyByteBuf, OpenQuestDisplayMessage> STREAM_CODEC =
             StreamCodec.of(OpenQuestDisplayMessage::encode, OpenQuestDisplayMessage::decode);
