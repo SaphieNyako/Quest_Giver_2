@@ -1,5 +1,6 @@
 package com.saphienyako.quest_giver.quest.task;
 
+import com.google.gson.JsonElement;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -41,16 +42,35 @@ public class CraftTask implements TaskType<Ingredient, ItemStack> {
 
     @Override
     public Ingredient fromJson(JsonObject json) {
-        // Manually convert JSON -> Ingredient
-        JsonArray array = json.getAsJsonArray("item");
-        ItemStack[] stacks = new ItemStack[array.size()];
-        for (int i = 0; i < array.size(); i++) {
-            String itemId = array.get(i).getAsString();
+        JsonElement elem = json.get("item");
+        ItemStack[] stacks;
+
+        if (elem.isJsonArray()) {
+            JsonArray array = elem.getAsJsonArray();
+            stacks = new ItemStack[array.size()];
+            for (int i = 0; i < array.size(); i++) {
+                String itemId = array.get(i).getAsString();
+                Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemId));
+                if (item == null) item = Items.AIR;
+                stacks[i] = new ItemStack(item);
+            }
+        } else if (elem.isJsonObject()) {
+            String itemId = elem.getAsJsonObject().get("item").getAsString();
             Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemId));
             if (item == null) item = Items.AIR;
-            stacks[i] = new ItemStack(item);
+            stacks = new ItemStack[] { new ItemStack(item) };
+        } else {
+            stacks = new ItemStack[0]; // fallback
         }
+
         return Ingredient.of(stacks);
+    }
+
+    private static ItemStack parseItem(JsonObject obj) {
+        String itemId = obj.get("item").getAsString();
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemId));
+        if (item == null) item = Items.AIR;
+        return new ItemStack(item);
     }
 
     @Override
