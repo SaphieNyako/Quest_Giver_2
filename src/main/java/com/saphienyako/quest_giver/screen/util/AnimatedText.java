@@ -1,12 +1,13 @@
 package com.saphienyako.quest_giver.screen.util;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,8 +74,8 @@ public class AnimatedText {
         if (!this.isOnLastPage()) this.currentPage += 1;
     }
     
-    public void render(GuiGraphics graphics, int x, int y) {
-        this.pages.get(this.currentPage).render(graphics, x, y);
+    public void render(@Nonnull PoseStack poseStack, int x, int y) {
+        this.pages.get(this.currentPage).render(poseStack, x, y);
     }
 
     private class Page {
@@ -120,13 +121,13 @@ public class AnimatedText {
             return this.visibleLines >= this.lines.size();
         }
 
-        public void render(GuiGraphics graphics, int x, int y) {
+        public void render(@Nonnull PoseStack poseStack, int x, int y) {
             for (int i = 0; i < Math.min(this.visibleLines, this.lines.size()); i++) {
-                graphics.drawString(AnimatedText.this.font, this.lines.get(i), x, y + i * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFF, false);
+                AnimatedText.this.font.draw(poseStack, this.lines.get(i), x, y + i * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFF);
             }
             if (this.visibleLines < this.lines.size() && this.visibleChars > 0) {
                 FormattedCharSequence fsq = subSequence(this.lines.get(this.visibleLines), 0, this.visibleChars);
-                graphics.drawString(AnimatedText.this.font, fsq, x, y + this.visibleLines * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFF, false);
+                AnimatedText.this.font.draw(poseStack, fsq, x, y + this.visibleLines * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFF);
             }
         }
 

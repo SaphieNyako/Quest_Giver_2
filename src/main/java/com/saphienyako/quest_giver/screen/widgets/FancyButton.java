@@ -1,10 +1,12 @@
 package com.saphienyako.quest_giver.screen.widgets;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.saphienyako.quest_giver.QuestGiver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -19,9 +21,7 @@ public class FancyButton extends Button {
     private final int height;
 
     protected FancyButton(ResourceLocation texture, int x, int y, int width, int height, Component message, BooleanSupplier enabled, OnPress onPress) {
-        super(x, y, width, height, message, btn -> {
-            if (enabled.getAsBoolean()) onPress.onPress(btn);
-        }, l -> wrapDefaultNarrationMessage(message));
+        super(x, y, width, height, message, btn -> { if (enabled.getAsBoolean()) onPress.onPress(btn);});
         this.enabled = enabled;
         this.texture = texture;
         this.width = width;
@@ -29,12 +29,14 @@ public class FancyButton extends Button {
     }
 
     @Override
-    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         if (this.enabled.getAsBoolean()) {
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;
-            graphics.blit(this.texture, this.getX(), this.getY(), 0, 0, this.width, this.height);
-            graphics.drawCenteredString(font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, getFGColor() | Mth.ceil(this.alpha * 255) << 24);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, this.texture);
+            blit(poseStack, this.x, this.y, 0, 0, this.width, this.height);
+            drawCenteredString(poseStack, font, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, getFGColor() | Mth.ceil(this.alpha * 255) << 24);
         }
     }
     

@@ -9,11 +9,9 @@ import com.saphienyako.quest_giver.screen.SelectQuestScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -63,16 +61,16 @@ public class EventListener {
     @SubscribeEvent
     public void playerTick(TickEvent.PlayerTickEvent event) {
         // Only check one / second
-        if (event.player.tickCount % 20 == 0 && !event.player.level().isClientSide && event.player instanceof ServerPlayer player) {
+        if (event.player.tickCount % 20 == 0 && !event.player.level.isClientSide && event.player instanceof ServerPlayer player) {
             QuestData quests = QuestData.get(player);
             player.getInventory().items.forEach(stack -> quests.checkComplete(ItemStackTask.INSTANCE, stack));
             //Quest Check for Biome
-            player.level().getBiome(player.blockPosition()).is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.location()));
+            player.level.getBiome(player.blockPosition()).is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.location()));
             //Quest Check for Structure
-            if (player.serverLevel().structureManager().hasAnyStructureAt(player.blockPosition())) {
-                RegistryAccess access = player.level().registryAccess();
-                Registry<Structure> structureRegistry = access.registryOrThrow(Registries.STRUCTURE);
-                player.serverLevel().structureManager().getAllStructuresAt(player.blockPosition()).forEach((structure, set) -> {
+            if (player.getLevel().structureManager().hasAnyStructureAt(player.blockPosition())) {
+                RegistryAccess access = player.level.registryAccess();
+                Registry<Structure> structureRegistry = access.registryOrThrow(Registry.STRUCTURE_REGISTRY);
+                player.getLevel().structureManager().getAllStructuresAt(player.blockPosition()).forEach((structure, set) -> {
                     ResourceLocation structureId = structureRegistry.getKey(structure);
                     if (structureId != null) {
                         quests.checkComplete(StructureTask.INSTANCE, structureId);

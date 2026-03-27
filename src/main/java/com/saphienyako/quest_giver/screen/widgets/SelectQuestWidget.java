@@ -1,5 +1,7 @@
 package com.saphienyako.quest_giver.screen.widgets;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.network.SelectQuestMessage;
@@ -7,8 +9,9 @@ import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import com.saphienyako.quest_giver.screen.util.TextProcessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +34,7 @@ public class SelectQuestWidget extends Button {
     private String backgroundName;
 
     public SelectQuestWidget(int x, int y, SelectableQuest quest, String questLineId, String backgroundName) {
-        super(x, y, WIDTH, HEIGHT, TextProcessor.INSTANCE.processLine(quest.display().title), b -> {}, l -> Component.empty());
+        super(x, y, WIDTH, HEIGHT, TextProcessor.INSTANCE.processLine(quest.display().title), b -> {});
         this.quest = quest;
         this.iconStack = new ItemStack(quest.icon());
         this.questLineId = questLineId;
@@ -45,17 +48,27 @@ public class SelectQuestWidget extends Button {
     }
 
     @Override
-    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
-        
-        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName + "_background_03.png"), this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
-        
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 10);
-        graphics.renderFakeItem(this.iconStack, this.getX() + 20, this.getY() + (this.height - 16) / 2);
-        
-        graphics.drawString(Minecraft.getInstance().font, quest.display().title, this.getX() + 38, this.getY() + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFF, true);
-        graphics.pose().popPose();
+
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, new ResourceLocation(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_03.png"));
+
+        blit(poseStack, this.x, this.y, 0, 0, WIDTH, HEIGHT);
+
+        poseStack.pushPose();
+        poseStack.translate(0, 0, 10);
+
+        ItemRenderer itemRenderer = minecraft.getItemRenderer();
+        int itemX = this.x + 20;
+        int itemY = this.y + (this.height - 16) / 2;
+
+        itemRenderer.renderAndDecorateItem(this.iconStack, itemX, itemY);
+        itemRenderer.renderGuiItemDecorations(font, this.iconStack, itemX, itemY);
+
+        font.draw(poseStack, quest.display().title, this.x + 38, this.y + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFF);
+
+        poseStack.popPose();
     }
 }

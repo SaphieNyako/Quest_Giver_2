@@ -1,5 +1,6 @@
 package com.saphienyako.quest_giver.screen;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.saphienyako.quest_giver.network.ConfirmQuestMessage;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
@@ -9,7 +10,7 @@ import com.saphienyako.quest_giver.screen.widgets.BackgroundWidget;
 import com.saphienyako.quest_giver.screen.widgets.EntityWidget;
 import com.saphienyako.quest_giver.screen.widgets.FancyButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -91,20 +92,23 @@ public class DisplayQuestScreen extends Screen {
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.pose().pushPose();
-        this.renderBackground(graphics);
-        graphics.pose().translate(0, 0, 20);
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        graphics.pose().translate(0, 0, 20);
-        this.drawTextLines(graphics, mouseX, mouseY);
-        graphics.pose().popPose();
+    public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        poseStack.pushPose();
+        this.renderBackground(poseStack);
+        poseStack.translate(0, 0, 20);
+        super.render(poseStack, mouseX, mouseY, partialTicks);
+        poseStack.translate(0, 0, 20);
+        this.drawTextLines(poseStack, mouseX, mouseY);
+        poseStack.popPose();
     }
 
-    private void drawTextLines(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void drawTextLines(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
         if (this.minecraft != null) {
-            graphics.drawString(this.minecraft.font, this.title, (this.width / 2) - (this.minecraft.font.width(this.title) / 2) + 20, this.top - this.minecraft.font.lineHeight + 10, 0xFFFFFF, false);
-            this.text.render(graphics, this.left + EntityWidget.WIDTH + BackgroundWidget.HORIZONTAL_PADDING, this.top + BackgroundWidget.VERTICAL_PADDING);
+            drawString(poseStack , this.minecraft.font , this.title,
+                    (this.width / 2) - (this.minecraft.font.width(this.title) / 2) + 20,
+                    this.top - this.minecraft.font.lineHeight + 10,
+                    0xFFFFFF);
+            this.text.render(poseStack, this.left + EntityWidget.WIDTH + BackgroundWidget.HORIZONTAL_PADDING, this.top + BackgroundWidget.VERTICAL_PADDING);
         }
     }
 

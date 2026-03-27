@@ -1,9 +1,11 @@
 package com.saphienyako.quest_giver.screen.widgets;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.saphienyako.quest_giver.QuestGiver;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -30,13 +32,16 @@ public class BackgroundWidget extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_01.png"), this.getX(), this.getY(), 0, 0, 240, HEIGHT);
-        graphics.blit(new ResourceLocation(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_02.png"), this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        RenderSystem.setShaderTexture(0, new ResourceLocation(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_01.png"));
+        blit(poseStack, this.x, this.y, 0, 0, 240, HEIGHT);
+
+        RenderSystem.setShaderTexture(0, new ResourceLocation(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_02.png"));
+        blit(poseStack, this.x + 240, this.y, 0, 0, WIDTH - 240, HEIGHT);
     }
 
     @Override
-    protected void updateWidgetNarration(@Nonnull NarrationElementOutput output) {
+    public void updateNarration(@Nonnull NarrationElementOutput output) {
         //
     }
 }
