@@ -22,7 +22,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -47,7 +46,6 @@ public class QuestGiver
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::entityAttributes);
         MinecraftForge.EVENT_BUS.register(this);
-        modEventBus.addListener(this::addCreative);
         ModEntities.register(modEventBus);
 
 
@@ -81,9 +79,7 @@ public class QuestGiver
         event.enqueueWork(QuestGiverNetwork::register);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        //Added ModCreativeModeTab for the mod itself
-    }
+    //Creative Tab in 1.19.2 is done in the Items Properties.
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {

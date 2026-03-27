@@ -56,7 +56,7 @@ public class QuestVillagerEntity extends Villager {
                     }
             }
 
-            return InteractionResult.sidedSuccess(this.level().isClientSide);
+            return InteractionResult.sidedSuccess(this.level.isClientSide);
         } else {
             return superResult;
         }
