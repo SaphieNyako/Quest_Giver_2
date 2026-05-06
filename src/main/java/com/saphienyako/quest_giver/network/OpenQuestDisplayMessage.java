@@ -14,7 +14,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmationButtons, int entityId, String questLineId, String backgroundName) {
+public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmationButtons, int entityId, String questLineId, String backgroundName, boolean dismiss) {
 
     public static void encode(OpenQuestDisplayMessage msg, FriendlyByteBuf buffer) {
         msg.display().toNetwork(buffer);
@@ -22,13 +22,14 @@ public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmation
         buffer.writeInt(msg.entityId());
         buffer.writeUtf(msg.questLineId());
         buffer.writeUtf(msg.backgroundName());
+        buffer.writeBoolean(msg.dismiss());
     }
 
     public static OpenQuestDisplayMessage decode(FriendlyByteBuf buffer) {
         QuestDisplay display = QuestDisplay.fromNetwork(buffer);
         boolean confirmationButtons = buffer.readBoolean();
         int id = buffer.readInt();
-        return new OpenQuestDisplayMessage(display, confirmationButtons, id, buffer.readUtf(), buffer.readUtf());
+        return new OpenQuestDisplayMessage(display, confirmationButtons, id, buffer.readUtf(), buffer.readUtf(), buffer.readBoolean());
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
@@ -39,6 +40,6 @@ public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmation
             }
         }
         if (this.entityId() != -1) ClientQuests.lastTalkedEntityId = this.entityId();
-        Minecraft.getInstance().setScreen(new DisplayQuestScreen(this.display(), this.confirmationButtons(), ClientQuests.lastTalkedEntityId, this.questLineId, this.backgroundName));
+        Minecraft.getInstance().setScreen(new DisplayQuestScreen(this.display(), this.confirmationButtons(), ClientQuests.lastTalkedEntityId, this.questLineId, this.backgroundName, this.dismiss));
     }
 }
