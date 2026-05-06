@@ -52,6 +52,12 @@ public class QuestGiverNetwork {
                 .encoder(SelectQuestMessage::encode)
                 .consumerMainThread(SelectQuestMessage::handle)
                 .add();
+
+        net.messageBuilder(DismissEntityMessage.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(DismissEntityMessage::decode)
+                .encoder(DismissEntityMessage::encode)
+                .consumerMainThread(DismissEntityMessage::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

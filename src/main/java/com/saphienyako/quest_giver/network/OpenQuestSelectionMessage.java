@@ -14,7 +14,7 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.List;
 import java.util.function.Supplier;
 
-public record OpenQuestSelectionMessage(Component title, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
+public record OpenQuestSelectionMessage(Component title, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss) {
 
     public static void encode(OpenQuestSelectionMessage msg, FriendlyByteBuf buffer) {
         buffer.writeComponent(msg.title());
@@ -22,17 +22,18 @@ public record OpenQuestSelectionMessage(Component title, List<SelectableQuest> q
         buffer.writeInt(msg.entityId());
         buffer.writeUtf(msg.questLineId());
         buffer.writeUtf(msg.backgroundName());
+        buffer.writeBoolean(msg.dismiss());
     }
 
     public static OpenQuestSelectionMessage decode(FriendlyByteBuf buffer) {
         Component title = buffer.readComponent();
         List<SelectableQuest> quests = PacketUtil.readList(buffer, SelectableQuest::fromNetwork);
         int id = buffer.readInt();
-        return new OpenQuestSelectionMessage(title, quests, id, buffer.readUtf(), buffer.readUtf());
+        return new OpenQuestSelectionMessage(title, quests, id, buffer.readUtf(), buffer.readUtf(), buffer.readBoolean());
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         if (this.entityId() != -1) ClientQuests.lastTalkedEntityId = this.entityId();
-        Minecraft.getInstance().setScreen(new SelectQuestScreen(this.title(), this.quests(), ClientQuests.lastTalkedEntityId, this.questLineId, this.backgroundName));
+        Minecraft.getInstance().setScreen(new SelectQuestScreen(this.title(), this.quests(), ClientQuests.lastTalkedEntityId, this.questLineId, this.backgroundName, this.dismiss));
     }
 }

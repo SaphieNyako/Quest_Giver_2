@@ -28,13 +28,16 @@ public class SelectQuestScreen extends Screen {
     private final String questLineId;
 
     private final String backgroundName;
+
+    private final boolean dismiss;
     
-    public SelectQuestScreen(Component name, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) {
+    public SelectQuestScreen(Component name, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss) {
         super(name);
         this.quests = ImmutableList.copyOf(quests);
         this.entityId = entityId;
         this.questLineId = questLineId;
         this.backgroundName = backgroundName;
+        this.dismiss = dismiss;
     }
 
     @Override
@@ -45,7 +48,7 @@ public class SelectQuestScreen extends Screen {
         this.top = (this.height / 2) - (Math.max(EntityWidget.HEIGHT, (SelectQuestWidget.HEIGHT + 2) * this.quests.size()) / 2);
         
         for (int i = 0; i < this.quests.size(); i++) {
-            this.addRenderableWidget(new SelectQuestWidget(left + EntityWidget.WIDTH + 25, this.top + ((SelectQuestWidget.HEIGHT + 2) * i), this.quests.get(i), questLineId, backgroundName));
+            this.addRenderableWidget(new SelectQuestWidget(left + EntityWidget.WIDTH + 25, this.top + ((SelectQuestWidget.HEIGHT + 2) * i), this.quests.get(i), questLineId, backgroundName, dismiss));
         }
 
         if (this.entityId != -1) {
