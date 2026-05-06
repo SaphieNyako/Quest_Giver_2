@@ -1,6 +1,7 @@
 package com.saphienyako.quest_giver.screen;
 
 import com.saphienyako.quest_giver.network.ConfirmQuestMessage;
+import com.saphienyako.quest_giver.network.DismissEntityMessage;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
 import com.saphienyako.quest_giver.screen.util.AnimatedText;
@@ -34,13 +35,16 @@ public class DisplayQuestScreen extends Screen {
 
     private final String backgroundName;
 
-    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId, String questLineId, String backgroundName) {
+    private final boolean dismiss;
+
+    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId, String questLineId, String backgroundName, boolean dismiss) {
         super(display.title);
         this.backgroundName = backgroundName;
         this.display = display;
         this.hasConfirmationButtons = hasConfirmationButtons;
         this.entityId = entityId;
         this.questLineId = questLineId;
+        this.dismiss = dismiss;
 
         this.title = TextProcessor.INSTANCE.processLine(this.display.title);
         //TODO
@@ -88,6 +92,9 @@ public class DisplayQuestScreen extends Screen {
 
     @Override
     public void onClose() {
+        if(this.dismiss) {
+            PacketDistributor.sendToServer(new DismissEntityMessage(this.entityId));
+        }
         super.onClose();
     }
 

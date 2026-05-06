@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.function.Supplier;
 
-public record SelectQuestMessage(String questLineId, ResourceLocation quest, String backgroundName)  implements CustomPacketPayload {
+public record SelectQuestMessage(String questLineId, ResourceLocation quest, String backgroundName, boolean dismiss)  implements CustomPacketPayload {
 
 
     public static final CustomPacketPayload.Type<SelectQuestMessage> TYPE =
@@ -30,13 +30,15 @@ public record SelectQuestMessage(String questLineId, ResourceLocation quest, Str
         buffer.writeUtf(msg.questLineId());
         buffer.writeResourceLocation(msg.quest());
         buffer.writeUtf(msg.backgroundName());
+        buffer.writeBoolean(msg.dismiss);
     }
 
     private static SelectQuestMessage decode(FriendlyByteBuf buffer) {
         String questLineId = buffer.readUtf();
         ResourceLocation quest = buffer.readResourceLocation();
         String backgroundName = buffer.readUtf();
-        return new SelectQuestMessage(questLineId, quest, backgroundName);
+        boolean dismiss = buffer.readBoolean();
+        return new SelectQuestMessage(questLineId, quest, backgroundName, dismiss);
     }
     @SuppressWarnings("resource")
     public static void handle(SelectQuestMessage msg, IPayloadContext context) {
@@ -54,7 +56,7 @@ public record SelectQuestMessage(String questLineId, ResourceLocation quest, Str
                     if (display != null) {
                         PacketDistributor.sendToPlayer(
                                 serverPlayer,
-                                new OpenQuestDisplayMessage(display, false, -1, msg.questLineId(), msg.backgroundName())
+                                new OpenQuestDisplayMessage(display, false, -1, msg.questLineId(), msg.backgroundName(), msg.dismiss)
                         );
                     }
                 }

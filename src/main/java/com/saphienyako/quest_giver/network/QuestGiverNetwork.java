@@ -41,6 +41,12 @@ public class QuestGiverNetwork {
                 SelectQuestMessage.STREAM_CODEC,
                 SelectQuestMessage::handle
         );
+
+        REGISTRAR.playToServer(
+                DismissEntityMessage.TYPE,
+                DismissEntityMessage.STREAM_CODEC,
+                DismissEntityMessage::handle
+        );
     }
 
 }

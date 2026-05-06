@@ -1,5 +1,6 @@
 package com.saphienyako.quest_giver;
 
+
 import com.saphienyako.quest_giver.quest.QuestLinkManager;
 import com.saphienyako.quest_giver.quest.data.QuestData;
 import com.saphienyako.quest_giver.quest.data.QuestLinkData;
@@ -71,7 +72,6 @@ public class EventListener {
     @SubscribeEvent
     public void playerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-
         if (player.tickCount % 20 == 0 && !player.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
 
             QuestData quests = QuestData.get(serverPlayer);

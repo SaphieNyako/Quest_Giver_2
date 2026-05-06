@@ -19,7 +19,7 @@ public class OpenQuestDisplayHandler {
             }
         }
         if (msg.entityId() != -1) ClientQuests.lastTalkedEntityId = msg.entityId();
-        Minecraft.getInstance().setScreen(new DisplayQuestScreen(msg.display(), msg.confirmationButtons(), ClientQuests.lastTalkedEntityId, msg.questLineId(), msg.backgroundName()));
+        Minecraft.getInstance().setScreen(new DisplayQuestScreen(msg.display(), msg.confirmationButtons(), ClientQuests.lastTalkedEntityId, msg.questLineId(), msg.backgroundName(), msg.dismiss()));
 
     }
 }

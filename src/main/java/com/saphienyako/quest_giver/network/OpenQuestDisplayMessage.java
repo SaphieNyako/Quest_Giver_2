@@ -21,7 +21,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.function.Supplier;
 
-public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmationButtons, int entityId, String questLineId, String backgroundName) implements CustomPacketPayload {
+public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmationButtons, int entityId, String questLineId, String backgroundName, boolean dismiss) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<OpenQuestDisplayMessage> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "open_quest_display"));
@@ -35,13 +35,14 @@ public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmation
         buffer.writeInt(msg.entityId());
         buffer.writeUtf(msg.questLineId());
         buffer.writeUtf(msg.backgroundName());
+        buffer.writeBoolean(msg.dismiss);
     }
 
     private static OpenQuestDisplayMessage decode(FriendlyByteBuf buffer) {
         QuestDisplay display = QuestDisplay.fromNetwork(buffer);
         boolean confirmationButtons = buffer.readBoolean();
         int id = buffer.readInt();
-        return new OpenQuestDisplayMessage(display, confirmationButtons, id, buffer.readUtf(), buffer.readUtf());
+        return new OpenQuestDisplayMessage(display, confirmationButtons, id, buffer.readUtf(), buffer.readUtf(), buffer.readBoolean());
     }
     @SuppressWarnings("resource")
     public static void handle(OpenQuestDisplayMessage msg, IPayloadContext context) {

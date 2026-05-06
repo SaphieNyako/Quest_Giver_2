@@ -21,7 +21,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.List;
 import java.util.function.Supplier;
 
-public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName) implements CustomPacketPayload {
+public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<OpenQuestSelectionMessage> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "open_quest_selection"));
@@ -34,6 +34,7 @@ public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entity
         buf.writeInt(msg.entityId());
         buf.writeUtf(msg.questLineId());
         buf.writeUtf(msg.backgroundName());
+        buf.writeBoolean(msg.dismiss());
     }
 
     private static OpenQuestSelectionMessage decode(FriendlyByteBuf buf) {
@@ -41,12 +42,13 @@ public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entity
         int id = buf.readInt();
         String questLineId = buf.readUtf();
         String backgroundName = buf.readUtf();
-        return new OpenQuestSelectionMessage(quests, id, questLineId, backgroundName);
+        boolean dismiss = buf.readBoolean();
+        return new OpenQuestSelectionMessage(quests, id, questLineId, backgroundName, dismiss);
     }
 
     public static void handle(OpenQuestSelectionMessage msg, IPayloadContext context) {
         if (msg.entityId() != -1) ClientQuests.lastTalkedEntityId = msg.entityId();
-        Minecraft.getInstance().setScreen(new SelectQuestScreen(msg.quests(), ClientQuests.lastTalkedEntityId, msg.questLineId, msg.backgroundName));
+        Minecraft.getInstance().setScreen(new SelectQuestScreen(msg.quests(), ClientQuests.lastTalkedEntityId, msg.questLineId, msg.backgroundName, msg.dismiss));
 
     }
 

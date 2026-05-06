@@ -1,2 +1,3 @@
 /summon quest_giver:quest_villager
 /summon minecraft:wolf
+/summon quest_giver:quest_villager
