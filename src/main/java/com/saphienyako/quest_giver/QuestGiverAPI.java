@@ -32,7 +32,7 @@ public class QuestGiverAPI {
      * @param displayName   The name to show in the GUI (usually entity.getDisplayName())
      * @param hand          The hand used for interaction
      * @param dismiss       Should entity be dismissed after closing the window
-     * @param scale         What scale should the entity have, based on screen size / entity.height * scale                
+     * @param scale         What scale should the entity have, based on screen size / entity.height * scale
      */
     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, boolean dismiss, double scale) {
 
