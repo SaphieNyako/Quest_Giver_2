@@ -50,7 +50,7 @@ public class SelectQuestScreen extends Screen {
         if (this.entityId != -1) {
             Entity entity = Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.getEntity(this.entityId);
             if (entity instanceof LivingEntity living) {
-                this.addRenderableWidget(new EntityWidget(left, (this.height - EntityWidget.HEIGHT) / 2, living, this.scale));
+                this.addRenderableWidget(new EntityWidget(left, (this.height - EntityWidget.HEIGHT) / 2 + 30, living, this.scale));
             }
         }
     }
