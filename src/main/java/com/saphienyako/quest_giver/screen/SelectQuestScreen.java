@@ -18,24 +18,22 @@ public class SelectQuestScreen extends Screen {
     
     private final List<SelectableQuest> quests;
     private final int entityId;
-
     @SuppressWarnings("FieldCanBeLocal")
     private int left;
     private int top;
-
     private final String questLineId;
-
     private final String backgroundName;
-
     private final boolean dismiss;
+    private final double scale;
     
-    public SelectQuestScreen(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss) {
+    public SelectQuestScreen(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss, double scale) {
         super(Component.empty());
         this.quests = ImmutableList.copyOf(quests);
         this.entityId = entityId;
         this.questLineId = questLineId;
         this.backgroundName = backgroundName;
         this.dismiss = dismiss;
+        this.scale = scale;
     }
 
     @Override
@@ -46,13 +44,13 @@ public class SelectQuestScreen extends Screen {
         this.top = (this.height / 2) - (Math.max(EntityWidget.HEIGHT, (SelectQuestWidget.HEIGHT + 2) * this.quests.size()) / 2);
         
         for (int i = 0; i < this.quests.size(); i++) {
-            this.addRenderableWidget(new SelectQuestWidget(left + EntityWidget.WIDTH + 25, this.top + ((SelectQuestWidget.HEIGHT + 2) * i), this.quests.get(i), questLineId, backgroundName, this.dismiss));
+            this.addRenderableWidget(new SelectQuestWidget(left + EntityWidget.WIDTH + 25, this.top + ((SelectQuestWidget.HEIGHT + 2) * i), this.quests.get(i), questLineId, backgroundName, this.dismiss, this.scale));
         }
 
         if (this.entityId != -1) {
             Entity entity = Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.getEntity(this.entityId);
             if (entity instanceof LivingEntity living) {
-                this.addRenderableWidget(new EntityWidget(left, (this.height - EntityWidget.HEIGHT) / 2, living));
+                this.addRenderableWidget(new EntityWidget(left - 20, (this.height - EntityWidget.HEIGHT) / 2 - 30, living, scale));
             }
         }
     }

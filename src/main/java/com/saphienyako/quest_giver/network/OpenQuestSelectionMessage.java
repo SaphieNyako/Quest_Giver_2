@@ -21,7 +21,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.List;
 import java.util.function.Supplier;
 
-public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss) implements CustomPacketPayload {
+public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss, double scale) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<OpenQuestSelectionMessage> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "open_quest_selection"));
@@ -35,6 +35,7 @@ public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entity
         buf.writeUtf(msg.questLineId());
         buf.writeUtf(msg.backgroundName());
         buf.writeBoolean(msg.dismiss());
+        buf.writeDouble(msg.scale());
     }
 
     private static OpenQuestSelectionMessage decode(FriendlyByteBuf buf) {
@@ -43,12 +44,13 @@ public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entity
         String questLineId = buf.readUtf();
         String backgroundName = buf.readUtf();
         boolean dismiss = buf.readBoolean();
-        return new OpenQuestSelectionMessage(quests, id, questLineId, backgroundName, dismiss);
+        double scale = buf.readDouble();
+        return new OpenQuestSelectionMessage(quests, id, questLineId, backgroundName, dismiss, scale);
     }
 
     public static void handle(OpenQuestSelectionMessage msg, IPayloadContext context) {
         if (msg.entityId() != -1) ClientQuests.lastTalkedEntityId = msg.entityId();
-        Minecraft.getInstance().setScreen(new SelectQuestScreen(msg.quests(), ClientQuests.lastTalkedEntityId, msg.questLineId, msg.backgroundName, msg.dismiss));
+        Minecraft.getInstance().setScreen(new SelectQuestScreen(msg.quests(), ClientQuests.lastTalkedEntityId, msg.questLineId, msg.backgroundName, msg.dismiss, msg.scale));
 
     }
 

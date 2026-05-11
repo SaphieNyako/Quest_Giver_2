@@ -21,7 +21,7 @@ public class QuestGiverAPI {
 
 
     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId) {
-      interactQuest(player, entityId, displayName, hand, questLineId, false);
+      interactQuest(player, entityId, displayName, hand, questLineId, false, 2);
     }
 
     /**
@@ -35,9 +35,10 @@ public class QuestGiverAPI {
      * @param questLineId   The ID of the quest line, folder name of data/quest_lines/<ID>
      * @param dismiss       Should entity be dismissed when window is closed.
      *                      This is only used if entity is summoned specifically to show the quest and should vanish afterward.
+     * @param scale         What scale should the entity be, base on; screen/entity.height * scale
      */
 
-    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, boolean dismiss) {
+    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, boolean dismiss, double scale) {
 
         QuestData questData = QuestData.get(player);
 
@@ -50,7 +51,7 @@ public class QuestGiverAPI {
             QuestDisplay completionDisplay = line.completePendingQuest();
 
             if (completionDisplay != null) {
-                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId, "quest_giver", dismiss);
+                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId, "quest_giver", dismiss, scale);
                 player.swing(hand, true);
                 return;
             }
@@ -61,9 +62,9 @@ public class QuestGiverAPI {
             if (!active.isEmpty()) {
 
                 if (active.size() == 1) {
-                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, "quest_giver", dismiss);
+                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, "quest_giver", dismiss, scale);
                 } else {
-                    sendQuestSelection(player, active, entityId, questLineId, "quest_giver", dismiss);
+                    sendQuestSelection(player, active, entityId, questLineId, "quest_giver", dismiss, scale);
                 }
 
                 player.swing(hand, true);
@@ -77,7 +78,7 @@ public class QuestGiverAPI {
         QuestGiver.LOGGER.info("Initiating Quest: {}", initDisplay);
 
         if (initDisplay != null) {
-            sendQuestDisplay(player, initDisplay, true, entityId, questLineId, "quest_giver", dismiss);
+            sendQuestDisplay(player, initDisplay, true, entityId, questLineId, "quest_giver", dismiss, scale);
             player.swing(hand, true);
         }
     }
@@ -95,11 +96,11 @@ public class QuestGiverAPI {
      */
 
     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, String backgroundName){
-    interactQuest(player, entityId, displayName, hand, questLineId, backgroundName, false);
+    interactQuest(player, entityId, displayName, hand, questLineId, backgroundName, false, 2);
     }
 
 
-    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, String backgroundName, boolean dismiss) {
+    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, String backgroundName, boolean dismiss, double scale) {
 
         QuestData questData = QuestData.get(player);
 
@@ -112,7 +113,7 @@ public class QuestGiverAPI {
             QuestDisplay completionDisplay = line.completePendingQuest();
 
             if (completionDisplay != null) {
-                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId, backgroundName, dismiss);
+                sendQuestDisplay(player, completionDisplay, false, entityId, questLineId, backgroundName, dismiss, scale);
                 player.swing(hand, true);
                 return;
             }
@@ -123,9 +124,9 @@ public class QuestGiverAPI {
             if (!active.isEmpty()) {
 
                 if (active.size() == 1) {
-                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, backgroundName, dismiss);
+                    sendQuestDisplay(player, active.get(0).display(), false, entityId, questLineId, backgroundName, dismiss, scale);
                 } else {
-                    sendQuestSelection(player, active, entityId, questLineId, backgroundName, dismiss);
+                    sendQuestSelection(player, active, entityId, questLineId, backgroundName, dismiss, scale);
                 }
 
                 player.swing(hand, true);
@@ -139,7 +140,7 @@ public class QuestGiverAPI {
         QuestGiver.LOGGER.info("Initiating Quest: {}", initDisplay);
 
         if (initDisplay != null) {
-            sendQuestDisplay(player, initDisplay, true, entityId, questLineId, backgroundName, dismiss);
+            sendQuestDisplay(player, initDisplay, true, entityId, questLineId, backgroundName, dismiss, scale);
             player.swing(hand, true);
         }
     }
@@ -147,13 +148,13 @@ public class QuestGiverAPI {
 
 
 
-    private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId, String questLineId, String backgroundName, boolean dismiss) {
-        PacketDistributor.sendToPlayer(player,new OpenQuestDisplayMessage(display, isNew, entityId, questLineId, backgroundName, dismiss));
+    private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId, String questLineId, String backgroundName, boolean dismiss, double scale) {
+        PacketDistributor.sendToPlayer(player,new OpenQuestDisplayMessage(display, isNew, entityId, questLineId, backgroundName, dismiss, scale));
     }
 
-    private static void sendQuestSelection(ServerPlayer player, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss) {
+    private static void sendQuestSelection(ServerPlayer player, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss, double scale) {
         PacketDistributor.sendToPlayer(player,
-                new OpenQuestSelectionMessage(quests, entityId, questLineId, backgroundName, dismiss));
+                new OpenQuestSelectionMessage(quests, entityId, questLineId, backgroundName, dismiss, scale));
     }
 
     /**

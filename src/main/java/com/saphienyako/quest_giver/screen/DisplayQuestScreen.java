@@ -27,17 +27,14 @@ public class DisplayQuestScreen extends Screen {
     private final int entityId;
     private final Component title;
     private final AnimatedText text;
-
     private int left;
     private int top;
-
     private final String questLineId;
-
     private final String backgroundName;
-
     private final boolean dismiss;
+    private final double scale;
 
-    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId, String questLineId, String backgroundName, boolean dismiss) {
+    public DisplayQuestScreen(QuestDisplay display, boolean hasConfirmationButtons, int entityId, String questLineId, String backgroundName, boolean dismiss, double scale) {
         super(display.title);
         this.backgroundName = backgroundName;
         this.display = display;
@@ -45,6 +42,7 @@ public class DisplayQuestScreen extends Screen {
         this.entityId = entityId;
         this.questLineId = questLineId;
         this.dismiss = dismiss;
+        this.scale = scale;
 
         this.title = TextProcessor.INSTANCE.processLine(this.display.title);
         //TODO
@@ -65,7 +63,7 @@ public class DisplayQuestScreen extends Screen {
         if (this.entityId != -1) {
             Entity entity = Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.getEntity(this.entityId);
             if (entity instanceof LivingEntity living) {
-                this.addRenderableWidget(new EntityWidget(this.left, this.top + (BackgroundWidget.HEIGHT - EntityWidget.HEIGHT) / 2, living));
+                this.addRenderableWidget(new EntityWidget(this.left - 20, this.top + (BackgroundWidget.HEIGHT - EntityWidget.HEIGHT) / 2 - 30, living, scale));
             }
         }
 
