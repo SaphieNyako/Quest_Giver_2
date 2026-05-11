@@ -12,12 +12,14 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public record SelectQuestMessage(String questLineId, ResourceLocation quest, String backgroundName, boolean dismiss) {
+public record SelectQuestMessage(String questLineId, ResourceLocation quest, String backgroundName, boolean dismiss, double scale) {
 
     public static void encode(SelectQuestMessage msg, FriendlyByteBuf buffer) {
         buffer.writeUtf(msg.questLineId());
         buffer.writeResourceLocation(msg.quest());
         buffer.writeUtf(msg.backgroundName());
+        buffer.writeBoolean(msg.dismiss());
+        buffer.writeDouble(msg.scale());
     }
 
     public static SelectQuestMessage decode(FriendlyByteBuf buffer) {
@@ -25,7 +27,8 @@ public record SelectQuestMessage(String questLineId, ResourceLocation quest, Str
         ResourceLocation quest = buffer.readResourceLocation();
         String backgroundName = buffer.readUtf();
         boolean dismiss = buffer.readBoolean();
-        return new SelectQuestMessage(questLineId, quest, backgroundName, dismiss);
+        double scale = buffer.readDoubleLE();
+        return new SelectQuestMessage(questLineId, quest, backgroundName, dismiss, scale);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
@@ -41,7 +44,7 @@ public record SelectQuestMessage(String questLineId, ResourceLocation quest, Str
 
                     if (display != null) {
                         QuestGiverNetwork.INSTANCE.reply(
-                                new OpenQuestDisplayMessage(display, false, -1, this.questLineId, this.backgroundName, this.dismiss), context
+                                new OpenQuestDisplayMessage(display, false, -1, this.questLineId, this.backgroundName, this.dismiss, this.scale), context
                         );
                     }
                 }

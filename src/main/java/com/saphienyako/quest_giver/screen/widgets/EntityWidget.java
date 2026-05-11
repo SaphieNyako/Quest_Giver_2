@@ -17,9 +17,12 @@ public class EntityWidget extends AbstractWidget {
 
     private final LivingEntity entity;
 
-    public EntityWidget(int x, int y, LivingEntity entity) {
+    private final double scale;
+
+    public EntityWidget(int x, int y, LivingEntity entity, double scale) {
         super(x, y, WIDTH, HEIGHT, Component.empty());
         this.entity = entity;
+        this.scale = scale; //TODO add Scaling
     }
 
 
@@ -27,7 +30,7 @@ public class EntityWidget extends AbstractWidget {
     public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         //Note; in 1.19 make all intermediate calculations double before casting to int to prevent flickering of the model.
 
-        double scale = ((double) this.height / this.entity.getType().getHeight()) * 1.5;
+        double scale = ((double) this.height / this.entity.getType().getHeight() * this.scale);
         double posX = this.x + this.width / 2.0;
         double posY = this.y + this.height + scale * 48.0 / 85.0;
         double centerX = this.x + this.width / 2.0;
