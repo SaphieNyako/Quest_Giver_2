@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 
 public class OpenQuestDisplayHandler {
 
-
     public static void openMenu(OpenQuestDisplayMessage msg) {
         if (msg.display().sound != null) {
             Player player = Minecraft.getInstance().player;

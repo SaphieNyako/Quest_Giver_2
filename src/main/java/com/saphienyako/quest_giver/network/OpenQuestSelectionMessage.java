@@ -2,6 +2,7 @@ package com.saphienyako.quest_giver.network;
 
 
 import com.saphienyako.quest_giver.QuestGiver;
+import com.saphienyako.quest_giver.network.handler.OpenQuestSelectionHandler;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
 import com.saphienyako.quest_giver.quest.data.ClientQuests;
 import com.saphienyako.quest_giver.quest.util.PacketUtil;
@@ -49,8 +50,11 @@ public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entity
     }
 
     public static void handle(OpenQuestSelectionMessage msg, IPayloadContext context) {
-        if (msg.entityId() != -1) ClientQuests.lastTalkedEntityId = msg.entityId();
-        Minecraft.getInstance().setScreen(new SelectQuestScreen(msg.quests(), ClientQuests.lastTalkedEntityId, msg.questLineId, msg.backgroundName, msg.dismiss, msg.scale));
+        context.enqueueWork(() -> {
+            if (context.flow().isClientbound()) {
+                OpenQuestSelectionHandler.handle(msg);
+            }
+        });
 
     }
 
