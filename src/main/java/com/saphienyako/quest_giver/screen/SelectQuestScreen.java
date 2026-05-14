@@ -2,6 +2,8 @@ package com.saphienyako.quest_giver.screen;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.saphienyako.quest_giver.network.DismissEntityMessage;
+import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import com.saphienyako.quest_giver.screen.widgets.EntityWidget;
 import com.saphienyako.quest_giver.screen.widgets.SelectQuestWidget;
@@ -76,6 +78,14 @@ public class SelectQuestScreen extends Screen {
                     this.top - 2 - this.minecraft.font.lineHeight,
                     0xFFFFFF);
         }
+    }
+
+    @Override
+    public void onClose() {
+        if(this.dismiss) {
+            QuestGiverNetwork.sendToServer(new DismissEntityMessage(this.entityId));
+        }
+        super.onClose();
     }
 
     @Override
