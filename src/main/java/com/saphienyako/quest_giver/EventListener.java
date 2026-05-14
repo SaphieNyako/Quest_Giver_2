@@ -12,6 +12,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
@@ -94,6 +95,10 @@ public class EventListener {
             // Try to see if this entity starts a quest line
             QuestLinkData link = QuestLinkManager.getMatchingLink(questNPC);
             if (link != null) {
+                //Cancel other interactions
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+
                 if(link.backgroundName != null) {
                     QuestGiverAPI.interactQuest(
                             player,

@@ -51,9 +51,6 @@ public class QuestVillagerEntity extends Villager {
             else if (player.getItemInHand(hand).getItem() == Items.NAME_TAG) {
                 setCustomName(player.getItemInHand(hand).getHoverName().copy());
                 setCustomNameVisible(true);
-                    if (player instanceof ServerPlayer) {
-                        QuestData.get((ServerPlayer) player).checkComplete(SpecialTask.INSTANCE, "special_task_example");
-                    }
             }
 
             return InteractionResult.sidedSuccess(this.level().isClientSide);
