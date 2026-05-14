@@ -11,6 +11,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -92,6 +93,10 @@ public class EventListener {
             // Try to see if this entity starts a quest line
             QuestLinkData link = QuestLinkManager.getMatchingLink(questNPC);
             if (link != null) {
+
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+
                 if(link.backgroundName != null) {
                     QuestGiverAPI.interactQuest(
                             player,
