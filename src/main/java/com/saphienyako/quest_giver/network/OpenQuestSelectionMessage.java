@@ -16,6 +16,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 
@@ -51,7 +53,7 @@ public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entity
 
     public static void handle(OpenQuestSelectionMessage msg, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (context.flow().isClientbound()) {
+            if (FMLEnvironment.dist == Dist.CLIENT) {
                 OpenQuestSelectionHandler.handle(msg);
             }
         });
