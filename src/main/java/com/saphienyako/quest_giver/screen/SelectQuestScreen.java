@@ -1,6 +1,7 @@
 package com.saphienyako.quest_giver.screen;
 
 import com.google.common.collect.ImmutableList;
+import com.saphienyako.quest_giver.network.DismissEntityMessage;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import com.saphienyako.quest_giver.screen.widgets.EntityWidget;
 import com.saphienyako.quest_giver.screen.widgets.SelectQuestWidget;
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -70,6 +72,14 @@ public class SelectQuestScreen extends Screen {
         if (this.minecraft != null) {
             graphics.drawString(this.minecraft.font, this.title, (this.width / 2 - (this.minecraft.font.width(this.title) / 2)) + 20, this.top - 2 - this.minecraft.font.lineHeight, 0xFFFFFF, false);
         }
+    }
+
+    @Override
+    public void onClose() {
+        if(this.dismiss) {
+            PacketDistributor.sendToServer(new DismissEntityMessage(this.entityId));
+        }
+        super.onClose();
     }
 
     @Override
