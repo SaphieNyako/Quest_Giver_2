@@ -57,7 +57,6 @@ public record OpenQuestSelectionMessage(List<SelectableQuest> quests, int entity
                 OpenQuestSelectionHandler.handle(msg);
             }
         });
-
     }
 
     @Override
