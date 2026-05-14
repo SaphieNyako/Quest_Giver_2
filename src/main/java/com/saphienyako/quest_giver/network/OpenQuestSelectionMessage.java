@@ -1,6 +1,7 @@
 package com.saphienyako.quest_giver.network;
 
 
+import com.saphienyako.quest_giver.network.handler.OpenQuestSelectionHandler;
 import com.saphienyako.quest_giver.quest.data.ClientQuests;
 import com.saphienyako.quest_giver.quest.util.PacketUtil;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
@@ -8,6 +9,8 @@ import com.saphienyako.quest_giver.screen.SelectQuestScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkEvent;
 
 
@@ -34,7 +37,10 @@ public record OpenQuestSelectionMessage(Component title, List<SelectableQuest> q
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
-        if (this.entityId() != -1) ClientQuests.lastTalkedEntityId = this.entityId();
-        Minecraft.getInstance().setScreen(new SelectQuestScreen(this.title(), this.quests(), ClientQuests.lastTalkedEntityId, this.questLineId, this.backgroundName, this.dismiss, this.scale));
+        supplier.get().enqueueWork(() -> {
+            if (FMLEnvironment.dist == Dist.CLIENT) {
+                OpenQuestSelectionHandler.handle(title, quests, entityId, questLineId, backgroundName, dismiss, scale);
+            }
+        });
     }
 }

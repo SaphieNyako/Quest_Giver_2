@@ -1,6 +1,7 @@
 package com.saphienyako.quest_giver.network;
 
 
+import com.saphienyako.quest_giver.network.handler.OpenQuestDisplayHandler;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
 import com.saphienyako.quest_giver.quest.data.ClientQuests;
 import com.saphienyako.quest_giver.screen.DisplayQuestScreen;
@@ -9,6 +10,8 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkEvent;
 
 
@@ -34,13 +37,9 @@ public record OpenQuestDisplayMessage(QuestDisplay display, boolean confirmation
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
-        if (this.display.sound != null) {
-            Player player = Minecraft.getInstance().player;
-            if (player != null && this.display().sound != null) {
-                Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(this.display().sound, SoundSource.MASTER, 1, 1, player.getRandom(), player.getX(), player.getY(), player.getZ()));
+        supplier.get().enqueueWork(() -> {
+            if (FMLEnvironment.dist == Dist.CLIENT) {
+                OpenQuestDisplayHandler.openMenu(display, confirmationButtons, entityId, questLineId, backgroundName, dismiss, scale);
             }
-        }
-        if (this.entityId() != -1) ClientQuests.lastTalkedEntityId = this.entityId();
-        Minecraft.getInstance().setScreen(new DisplayQuestScreen(this.display(), this.confirmationButtons(), ClientQuests.lastTalkedEntityId, this.questLineId, this.backgroundName, this.dismiss, this.scale));
-    }
+        });    }
 }
