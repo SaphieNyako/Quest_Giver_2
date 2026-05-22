@@ -12,14 +12,15 @@ public class QuestLinkData {
     public final ResourceLocation entityId;
     @Nullable
     public final String name;
-
     public final String backgroundName;
+    public final double scale;
 
-    public QuestLinkData(String questLineId, ResourceLocation entityId, @Nullable String name, String backgroundName) {
+    public QuestLinkData(String questLineId, ResourceLocation entityId, @Nullable String name, String backgroundName, double scale) {
         this.questLineId = questLineId;
         this.entityId = entityId;
         this.name = name;
         this.backgroundName = backgroundName;
+        this.scale = scale;
     }
 
     /** Convert a JSON element into this data object */
@@ -29,7 +30,7 @@ public class QuestLinkData {
         ResourceLocation entityId = new ResourceLocation(json.get("entity_id").getAsString());
         String name = json.has("name") ? json.get("name").getAsString() : null;
         String backgroundName = json.has("background_name") ? json.get("background_name").getAsString() : null;
-        return new QuestLinkData(questLineId, entityId, name, backgroundName);
+        double scale = json.has("scale") ? json.get("scale").getAsDouble() : 1.5;
+        return new QuestLinkData(questLineId, entityId, name, backgroundName, scale);
     }
-
 }
