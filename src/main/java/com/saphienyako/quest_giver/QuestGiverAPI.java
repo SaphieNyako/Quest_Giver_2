@@ -24,6 +24,11 @@ public class QuestGiverAPI {
       interactQuest(player, entityId, displayName, hand, questLineId, false, 2);
     }
 
+    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, double scale) {
+            interactQuest(player, entityId, displayName, hand, questLineId, false, scale);
+
+    }
+
     /**
      * Interact with a quest-giving entity.
      * Opens quest completion screen, active quest screen, or initializes a new quest.
@@ -96,9 +101,13 @@ public class QuestGiverAPI {
      */
 
     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, String backgroundName){
-    interactQuest(player, entityId, displayName, hand, questLineId, backgroundName, false, 2);
+    interactQuest(player, entityId, displayName, hand, questLineId, backgroundName, false, 1.5);
     }
 
+    public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, String backgroundName, double scale){
+            interactQuest(player, entityId, displayName, hand, questLineId, backgroundName, false, scale);
+
+    }
 
     public static void interactQuest(ServerPlayer player, int entityId, Component displayName, InteractionHand hand, String questLineId, String backgroundName, boolean dismiss, double scale) {
 

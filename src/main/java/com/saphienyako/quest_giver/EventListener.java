@@ -135,7 +135,8 @@ public class EventListener {
                             questNPC.getDisplayName(),
                             event.getHand(),
                             link.questLineId,
-                            link.backgroundName
+                            link.backgroundName,
+                            link.scale
                     );
                 } else {
                     QuestGiverAPI.interactQuest(
@@ -143,7 +144,8 @@ public class EventListener {
                             questNPC.getId(),
                             questNPC.getDisplayName(),
                             event.getHand(),
-                            link.questLineId
+                            link.questLineId,
+                            link.scale
                     );
                 }
                 player.swing(event.getHand(), true);
