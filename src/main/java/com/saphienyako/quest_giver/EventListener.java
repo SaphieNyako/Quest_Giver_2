@@ -118,6 +118,16 @@ public class EventListener {
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
 
+                ItemStack stack = player.getItemInHand(event.getHand());
+
+                if (!stack.isEmpty()) {
+
+                    if (QuestGiverAPI.tryAcceptGift(player, event.getHand())) {
+                        player.swing(event.getHand(), true);
+                        return;
+                    }
+                }
+
                 if(link.backgroundName != null) {
                     QuestGiverAPI.interactQuest(
                             player,
