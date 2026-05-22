@@ -8,6 +8,12 @@
       "translate": "Craft Example"
     }
   },
+  "rewards": [
+    {
+      "id": "quest_giver:command",
+      "command": "effect give @s minecraft:speed 30 1"
+    }
+  ],
   "icon": "minecraft:smoker",
   "start": {
     "description": {
