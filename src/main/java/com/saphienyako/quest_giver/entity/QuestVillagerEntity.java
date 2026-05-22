@@ -44,7 +44,7 @@ public class QuestVillagerEntity extends Villager {
                 QuestGiverAPI.interactQuest((ServerPlayer)player, this.getId(), Component.literal("Example Quest"), hand, "example_quest");
             }
 
-             else if (!stack.isEmpty() && player instanceof ServerPlayer && QuestGiverAPI.tryAcceptGift((ServerPlayer) player, hand)) {
+            else if (!stack.isEmpty() && player instanceof ServerPlayer && QuestGiverAPI.tryAcceptGift((ServerPlayer) player, hand)) {
                 player.swing(hand, true);
             }
 

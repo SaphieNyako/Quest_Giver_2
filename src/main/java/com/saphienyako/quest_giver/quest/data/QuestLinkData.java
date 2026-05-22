@@ -12,7 +12,6 @@ public class QuestLinkData {
     public final ResourceLocation entityId;
     @Nullable
     public final String name;
-
     public final String backgroundName;
 
     public QuestLinkData(String questLineId, ResourceLocation entityId, @Nullable String name, String backgroundName) {
@@ -31,5 +30,4 @@ public class QuestLinkData {
         String backgroundName = json.has("background_name") ? json.get("background_name").getAsString() : null;
         return new QuestLinkData(questLineId, entityId, name, backgroundName);
     }
-
 }
