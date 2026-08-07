@@ -71,6 +71,17 @@ public class QuestGiverAPI {
                 player.swing(hand, true);
                 return;
             }
+
+            // Questline end
+            QuestDisplay endDisplay = line.getEndDisplay();
+
+            if (endDisplay != null) {
+
+                sendQuestDisplay(player, endDisplay, false, entityId, questLineId, "quest_giver", dismiss, scale);
+
+                player.swing(hand, true);
+                return;
+            }
         }
 
         //Initialize the questline
@@ -132,6 +143,17 @@ public class QuestGiverAPI {
                 } else {
                     sendQuestSelection(player, displayName, active, entityId, questLineId, backgroundName, dismiss, scale);
                 }
+
+                player.swing(hand, true);
+                return;
+            }
+
+            // Questline end
+            QuestDisplay endDisplay = line.getEndDisplay();
+
+            if (endDisplay != null) {
+
+                sendQuestDisplay(player, endDisplay, false, entityId, questLineId, backgroundName, dismiss, scale);
 
                 player.swing(hand, true);
                 return;
