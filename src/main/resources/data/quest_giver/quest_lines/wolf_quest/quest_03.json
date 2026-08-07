@@ -2,7 +2,7 @@
   "parent": "quest_giver:quest_02",
   "complete": {
     "description": {
-      "translate": "You $(#8867DB)tamed$() a wolf!"
+      "translate": "You tamed a wolf!"
     },
     "title": {
       "translate": "Tame Example"

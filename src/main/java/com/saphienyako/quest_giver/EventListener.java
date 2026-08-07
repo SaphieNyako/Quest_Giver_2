@@ -11,6 +11,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +26,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class EventListener {
     
@@ -82,55 +84,137 @@ public class EventListener {
     }
 
     @SubscribeEvent
-    public void entityInteract(PlayerInteractEvent.EntityInteract event) {
+    public void entityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+
+        if (event.getHand() != InteractionHand.MAIN_HAND) {
+            return;
+        }
+
+        Entity target = event.getTarget();
+
+        // GLOBAL GIFT CHECK FIRST
         if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
-            if (player.getMainHandItem() == ItemStack.EMPTY) {
-                QuestData.get(player).checkComplete(AnimalPetTask.INSTANCE, event.getTarget());
-            }
 
-            Entity questNPC = event.getTarget();
+            ItemStack stack = player.getItemInHand(event.getHand());
 
-            // Try to see if this entity starts a quest line
-            QuestLinkData link = QuestLinkManager.getMatchingLink(questNPC);
-            if (link != null) {
+            if (!stack.isEmpty() && QuestGiverAPI.tryAcceptGift(player, target, event.getHand())) {
 
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
 
-                ItemStack stack = player.getItemInHand(event.getHand());
-
-                if (!stack.isEmpty()) {
-
-                    if (QuestGiverAPI.tryAcceptGift(player, event.getHand())) {
-                        player.swing(event.getHand(), true);
-                        return;
-                    }
-                }
-
-                if(link.backgroundName != null) {
-                    QuestGiverAPI.interactQuest(
-                            player,
-                            questNPC.getId(),
-                            questNPC.getDisplayName(),
-                            event.getHand(),
-                            link.questLineId,
-                            link.backgroundName,
-                            link.scale
-                    );
-                } else {
-                    QuestGiverAPI.interactQuest(
-                            player,
-                            questNPC.getId(),
-                            questNPC.getDisplayName(),
-                            event.getHand(),
-                            link.questLineId,
-                            link.scale
-                    );
-                }
                 player.swing(event.getHand(), true);
+                return;
             }
         }
+
+        // ONLY AFTER GIFTING do we care about QuestLinks
+        QuestLinkData link = QuestLinkManager.getMatchingLink(target);
+
+        if (link == null || link.interactionItem == null) {
+            return;
+        }
+
+        ItemStack stack = event.getEntity().getItemInHand(event.getHand());
+
+        ResourceLocation heldItemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+
+        if (!link.interactionItem.equals(heldItemId)) {
+            return;
+        }
+
+        if (event.getLevel().isClientSide) {
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
+
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        event.setCancellationResult(InteractionResult.SUCCESS);
+        event.setCanceled(true);
+
+        if (link.backgroundName != null) {
+            QuestGiverAPI.interactQuest(
+                    player,
+                    target.getId(),
+                    target.getDisplayName(),
+                    event.getHand(),
+                    link.questLineId,
+                    link.backgroundName,
+                    link.scale
+            );
+        } else {
+            QuestGiverAPI.interactQuest(
+                    player,
+                    target.getId(),
+                    target.getDisplayName(),
+                    event.getHand(),
+                    link.questLineId,
+                    link.scale
+            );
+        }
+
+        player.swing(event.getHand(), true);
     }
+
+    @SubscribeEvent
+    public void entityInteract(PlayerInteractEvent.EntityInteract event) {
+
+        if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+
+            if (event.getHand() != InteractionHand.MAIN_HAND) {
+                return;
+            }
+
+            Entity target = event.getTarget();
+
+            // PET TASK
+            if (player.getMainHandItem().isEmpty()) {
+                QuestData.get(player).checkComplete(AnimalPetTask.INSTANCE, target);
+            }
+
+            QuestLinkData link = QuestLinkManager.getMatchingLink(target);
+
+            if (link == null) {
+                return;
+            }
+
+            // This NPC requires a special interaction item.
+            // EntityInteractSpecific handles it instead.
+            if (link.interactionItem != null) {
+                return;
+            }
+
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+
+            if (link.backgroundName != null) {
+                QuestGiverAPI.interactQuest(
+                        player,
+                        target.getId(),
+                        target.getDisplayName(),
+                        event.getHand(),
+                        link.questLineId,
+                        link.backgroundName,
+                        link.scale
+                );
+            } else {
+                QuestGiverAPI.interactQuest(
+                        player,
+                        target.getId(),
+                        target.getDisplayName(),
+                        event.getHand(),
+                        link.questLineId,
+                        link.scale
+                );
+            }
+
+            player.swing(event.getHand(), true);
+        }
+    }
+
 
     //TODO Tree Grow
 

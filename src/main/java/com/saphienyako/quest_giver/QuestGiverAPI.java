@@ -11,6 +11,7 @@ import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -168,13 +169,19 @@ public class QuestGiverAPI {
      * @param input     The item or input for the quest task
      * @param onConsume Runnable to execute if the item is consumed (like shrinking the stack)
      */
-    public static boolean tryAcceptGift(ServerPlayer player, ItemStack input, @Nullable Runnable onConsume) {
-        if (player == null || input == null) return false;
+    public static boolean tryAcceptGift(ServerPlayer player, Entity target, ItemStack input, @Nullable Runnable onConsume) {
+        if (player == null || target == null || input == null || input.isEmpty()) {
+            return false;
+        }
 
-        boolean completed = QuestData.get(player).checkComplete(GiftTask.INSTANCE, input);
+        GiftTask.GiftContext context = new GiftTask.GiftContext(input, target);
+
+        boolean completed = QuestData.get(player).checkComplete(GiftTask.INSTANCE, context);
+
         if (completed && onConsume != null) {
             onConsume.run();
         }
+
         return completed;
     }
 
@@ -187,28 +194,45 @@ public class QuestGiverAPI {
      * @param message   Send a component message to the player after receiving the item
      */
 
-    public static boolean tryAcceptGift(ServerPlayer player, InteractionHand hand, Component message) {
+    public static boolean tryAcceptGift(ServerPlayer player, Entity target, InteractionHand hand, Component message) {
         ItemStack input = player.getItemInHand(hand);
+
         if (!input.isEmpty()) {
 
-            if (QuestData.get(player).checkComplete(GiftTask.INSTANCE, input)) {
-                if (!player.isCreative()) input.shrink(1);
+            GiftTask.GiftContext context =
+                    new GiftTask.GiftContext(input, target);
+
+            if (QuestData.get(player).checkComplete(GiftTask.INSTANCE, context)) {
+
+                if (!player.isCreative()) {
+                    input.shrink(1);
+                }
+
                 player.sendSystemMessage(message);
                 return true;
             }
         }
+
         return false;
     }
 
-    public static boolean tryAcceptGift(ServerPlayer player, InteractionHand hand) {
+    public static boolean tryAcceptGift(ServerPlayer player, Entity target, InteractionHand hand) {
         ItemStack input = player.getItemInHand(hand);
+
         if (!input.isEmpty()) {
 
-            if (QuestData.get(player).checkComplete(GiftTask.INSTANCE, input)) {
-                if (!player.isCreative()) input.shrink(1);
+            GiftTask.GiftContext context = new GiftTask.GiftContext(input, target);
+
+            if (QuestData.get(player).checkComplete(GiftTask.INSTANCE, context)) {
+
+                if (!player.isCreative()) {
+                    input.shrink(1);
+                }
+
                 return true;
             }
         }
+
         return false;
     }
 

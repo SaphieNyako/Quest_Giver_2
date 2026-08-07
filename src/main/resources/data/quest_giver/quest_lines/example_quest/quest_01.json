@@ -1,9 +1,17 @@
 {
   "parent": "quest_giver:root",
+  "complete": {
+    "description": {
+      "translate": "Thank you for giving the sword!"
+    },
+    "title": {
+      "translate": "Gift Example"
+    }
+  },
   "icon": "minecraft:iron_sword",
   "start": {
     "description": {
-      "translate": "$(b)Give$() a sword to the Quest Giver."
+      "translate": "Give a sword to the Quest Giver."
     },
     "title": {
       "translate": "Gift Example"
@@ -14,24 +22,8 @@
       "id": "quest_giver:gift",
       "item": {
         "item": "minecraft:iron_sword"
-      }
-    }
-  ],
-  "complete": {
-    "description": {
-      "translate": "Thank you for giving the sword!"
-    },
-    "title": {
-      "translate": "Gift Example"
-    }
-  },
-  "rewards": [
-    {
-      "id": "quest_giver:item",
-      "item": {
-        "count": 1,
-        "item": "minecraft:experience_bottle"
-      }
+      },
+      "entity": "quest_giver:quest_villager"
     }
   ]
 }

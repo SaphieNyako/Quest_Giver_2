@@ -1,0 +1,11 @@
+{
+  "icon": "minecraft:bone",
+  "start": {
+    "description": {
+      "translate": "This is the start of the Villager quest using an Item. Giving option to accept or decline the Quest Line."
+    },
+    "title": {
+      "translate": "Villager QuestLine Starts"
+    }
+  }
+}
