@@ -114,6 +114,22 @@ public class EventListener {
 
         Entity target = event.getTarget();
 
+        // GLOBAL GIFT CHECK FIRST
+        if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+
+            ItemStack stack = player.getItemInHand(event.getHand());
+
+            if (!stack.isEmpty() && QuestGiverAPI.tryAcceptGift(player, target, event.getHand())) {
+
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+
+                player.swing(event.getHand(), true);
+                return;
+            }
+        }
+
+        // ONLY AFTER GIFTING do we care about QuestLinks
         QuestLinkData link = QuestLinkManager.getMatchingLink(target);
 
         if (link == null || link.interactionItem == null) {
@@ -124,12 +140,10 @@ public class EventListener {
 
         ResourceLocation heldItemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
 
-        // Wrong item -> ignores the interaction entirely
         if (!link.interactionItem.equals(heldItemId)) {
             return;
         }
 
-        // Client: stop vanilla entity interaction
         if (event.getLevel().isClientSide) {
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
