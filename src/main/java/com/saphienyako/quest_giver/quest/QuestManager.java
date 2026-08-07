@@ -1,6 +1,8 @@
 package com.saphienyako.quest_giver.quest;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.data.QuestGiverDataLoader;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +13,7 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 import javax.annotation.Nonnull;
+import java.io.Reader;
 import java.util.*;
 
 public class QuestManager {
@@ -54,11 +57,45 @@ public class QuestManager {
 
                     for (String lineId : discoveredLines) {
 
-                        Map<ResourceLocation, Quest> loaded = QuestGiverDataLoader.loadJson(rm, "quest_lines/" + lineId, Quest::fromJson);
+                        Map<ResourceLocation, Quest> loaded = new HashMap<>();
+                        QuestEnd end = null;
+                        String folder = "quest_lines/" + lineId + "/";
 
-                        QuestGiver.LOGGER.info("Loaded {} quests for {}", loaded.size(), lineId);
+                        for (Map.Entry<ResourceLocation, Resource> entry : resources.entrySet()) {
 
-                        lines.put(lineId, new QuestLine(loaded));
+                            ResourceLocation fileId = entry.getKey();
+
+                            if (!fileId.getPath().startsWith(folder)) {
+                                continue;
+                            }
+
+                            String fileName = fileId.getPath().substring(folder.length());
+
+                            // Ignore nested folders if you don't support those
+                            if (fileName.contains("/")) {
+                                continue;
+                            }
+
+                            try (Reader reader = entry.getValue().openAsReader()) {
+
+                                JsonElement json = JsonParser.parseReader(reader);
+
+                                // SPECIAL END FILE
+                                if (fileName.equals("end.json")) {
+                                    end = QuestEnd.fromJson(json);
+                                    continue;
+                                }
+
+                                String questName = fileName.substring(0, fileName.length() - ".json".length());
+                                ResourceLocation questId = ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, questName);
+                                Quest quest = Quest.fromJson(questId, json);
+                                loaded.put(questId, quest);
+                            }
+                        }
+
+                        QuestGiver.LOGGER.info("Loaded {} quests for {}{}", loaded.size(), lineId, end != null ? " with end.json" : "");
+
+                        lines.put(lineId, new QuestLine(loaded, end));
                     }
 
                 } catch (Exception e) {

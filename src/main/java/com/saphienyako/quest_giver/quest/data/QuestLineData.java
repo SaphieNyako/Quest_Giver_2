@@ -254,6 +254,45 @@ public class QuestLineData {
         }
     }
 
+    public boolean isFinished() {
+
+        QuestLine quests = getQuestLine();
+
+        if (quests == null || !accepted) {
+            return false;
+        }
+
+        if (!activeQuests.isEmpty()) {
+            return false;
+        }
+
+        if (!pendingCompletion.isEmpty()) {
+            return false;
+        }
+
+        return quests.getNextQuests(activeQuests.keySet(), completedQuests).isEmpty();
+    }
+
+    @Nullable
+    public QuestDisplay getEndDisplay() {
+
+        if (!isFinished()) {
+            return null;
+        }
+
+        QuestLine quests = getQuestLine();
+
+        if (quests == null) {
+            return null;
+        }
+
+        QuestEnd end = quests.getEnd();
+
+        return end != null
+                ? end.display
+                : null;
+    }
+
     public static final Codec<QuestLineData> CODEC =
             RecordCodecBuilder.create(instance -> instance.group(
                     Codec.STRING.fieldOf("questLineId").forGetter(d -> d.questLineId),

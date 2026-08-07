@@ -1,0 +1,11 @@
+{
+  "icon": "minecraft:bone",
+  "start": {
+    "description": {
+      "translate": "This is the end of the Wolfie quest. Thank you for helping Wolfie out."
+    },
+    "title": {
+      "translate": "Wolfie QuestLine Ends"
+    }
+  }
+}

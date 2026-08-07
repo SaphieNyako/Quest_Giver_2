@@ -13,14 +13,18 @@ import java.util.stream.Collectors;
 public class QuestLine {
     //A QuestLine is a collection of Quest(s)
 
-    public static final QuestLine EMPTY = new QuestLine(ImmutableMap.of());
+    public static final QuestLine EMPTY = new QuestLine(ImmutableMap.of(), null);
+
+    @Nullable
+    private final QuestEnd end;
 
     private final Map<ResourceLocation, Quest> quests;
     private final Map<Quest, List<Quest>> questOrder;
 
-    public QuestLine(Map<ResourceLocation, Quest> quests) {
+    public QuestLine(Map<ResourceLocation, Quest> quests, @Nullable QuestEnd end) {
         this.quests = ImmutableMap.copyOf(quests);
         ImmutableMap.Builder<Quest, List<Quest>> questOrder = ImmutableMap.builder();
+        this.end = end;
         // Iterate through every quest in the questline
         for (Quest quest : this.quests.values()) {
             questOrder.put(quest, quest.parents.stream().map(rl -> {
@@ -32,6 +36,11 @@ public class QuestLine {
             }).collect(ImmutableList.toImmutableList()));
         }
         this.questOrder = questOrder.build();
+    }
+
+    @Nullable
+    public QuestEnd getEnd() {
+        return end;
     }
 
     @Nullable
