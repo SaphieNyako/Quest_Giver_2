@@ -29,6 +29,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class EventListener {
     
@@ -119,7 +120,7 @@ public class EventListener {
 
         ItemStack stack = event.getEntity().getItemInHand(event.getHand());
 
-        ResourceLocation heldItemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        ResourceLocation heldItemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
 
         if (!link.interactionItem.equals(heldItemId)) {
             return;
