@@ -49,7 +49,7 @@ public class QuestGiver
         modEventBus.addListener(this::addCreative);
         ModEntities.register(modEventBus);
         modEventBus.addListener(QuestGiverNetwork::register);
-
+        ModItems.register(modEventBus);
 
         //Datapack for Quests
         NeoForge.EVENT_BUS.addListener(this::reloadData);

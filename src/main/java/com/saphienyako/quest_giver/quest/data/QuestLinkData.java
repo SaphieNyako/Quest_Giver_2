@@ -14,12 +14,15 @@ public class QuestLinkData {
     public final String name;
     public final String backgroundName;
     public final double scale;
+    @Nullable
+    public final ResourceLocation interactionItem;
 
-    public QuestLinkData(String questLineId, ResourceLocation entityId, @Nullable String name, String backgroundName, double scale) {
+    public QuestLinkData(String questLineId, ResourceLocation entityId, @Nullable String name, String backgroundName,@Nullable ResourceLocation interactionItem, double scale) {
         this.questLineId = questLineId;
         this.entityId = entityId;
         this.name = name;
         this.backgroundName = backgroundName;
+        this.interactionItem = interactionItem;
         this.scale = scale;
     }
 
@@ -30,7 +33,8 @@ public class QuestLinkData {
         ResourceLocation entityId = ResourceLocation.tryParse(json.get("entity_id").getAsString());
         String name = json.has("name") ? json.get("name").getAsString() : null;
         String backgroundName = json.has("background_name") ? json.get("background_name").getAsString() : null;
+        ResourceLocation interactionItem = json.has("interaction_item") ? ResourceLocation.tryParse(json.get("interaction_item").getAsString()) : null;
         double scale = json.has("scale") ? json.get("scale").getAsDouble() : 1.5;
-        return new QuestLinkData(questLineId, entityId, name, backgroundName, scale);
+        return new QuestLinkData(questLineId, entityId, name, backgroundName,interactionItem, scale);
     }
 }

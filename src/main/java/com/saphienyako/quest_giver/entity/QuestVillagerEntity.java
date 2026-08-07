@@ -37,6 +37,8 @@ public class QuestVillagerEntity extends Villager {
     @Nonnull
     @Override
     public InteractionResult interactAt(@Nonnull Player player, @Nonnull Vec3 vec, @Nonnull InteractionHand hand) {
+
+
         InteractionResult superResult = super.interactAt(player, vec, hand);
         ItemStack stack = player.getItemInHand(hand);
         if (superResult == InteractionResult.PASS) {
@@ -44,9 +46,9 @@ public class QuestVillagerEntity extends Villager {
                 QuestGiverAPI.interactQuest((ServerPlayer)player, this.getId(), Component.literal("Example Quest"), hand, "example_quest");
             }
 
-             else if (!stack.isEmpty() && player instanceof ServerPlayer && QuestGiverAPI.tryAcceptGift((ServerPlayer) player, hand)) {
+     /*       else if (!stack.isEmpty() && player instanceof ServerPlayer && QuestGiverAPI.tryAcceptGift((ServerPlayer) player, hand)) {
                 player.swing(hand, true);
-            }
+            }  */
 
             else if (player.getItemInHand(hand).getItem() == Items.NAME_TAG) {
                 setCustomName(player.getItemInHand(hand).getHoverName().copy());

@@ -1,0 +1,34 @@
+{
+  "parent": "quest_giver:root",
+  "complete": {
+    "description": {
+      "translate": "Thank you for crafting a smoker"
+    },
+    "title": {
+      "translate": "Craft Example"
+    }
+  },
+  "rewards": [
+    {
+      "id": "quest_giver:command",
+      "command": "effect give @s minecraft:speed 30 1"
+    }
+  ],
+  "icon": "minecraft:smoker",
+  "start": {
+    "description": {
+      "translate": "Craft a Smoker and move to the next quest."
+    },
+    "title": {
+      "translate": "Craft Example"
+    }
+  },
+  "tasks": [
+    {
+      "id": "quest_giver:craft",
+      "item": {
+        "item": "minecraft:smoker"
+      }
+    }
+  ]
+}

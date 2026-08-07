@@ -1,5 +1,5 @@
 {
-  "parent": "quest_giver:quest_03",
+  "parent": "quest_giver:quest_01",
   "complete": {
     "description": {
       "translate": "You Gifted me 2 steak Thank you!"
