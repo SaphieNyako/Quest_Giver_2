@@ -3,6 +3,13 @@
     "quest_line_id": "wolf_quest",
     "entity_id": "minecraft:wolf",
     "name": "Wolfie",
-    "scale": 1.0
+    "scale": 1.0,
+    "interaction_item": "quest_giver:quest_scroll"
+  },
+  {
+    "quest_line_id": "villager_quest",
+    "entity_id": "minecraft:villager",
+    "name": "Bob",
+    "interaction_item": "quest_giver:quest_scroll"
   }
 ]

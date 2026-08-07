@@ -1,5 +1,5 @@
 {
-  "parent": "quest_giver:quest_wolfie_01",
+  "parent": "quest_giver:root",
   "complete": {
     "description": {
       "translate": "Thank you for crafting a smoker"

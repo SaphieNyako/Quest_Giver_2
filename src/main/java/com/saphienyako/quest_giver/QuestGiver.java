@@ -49,7 +49,7 @@ public class QuestGiver
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
         ModEntities.register(modEventBus);
-
+        ModItems.register(modEventBus);
 
         //Datapack for Quests
         MinecraftForge.EVENT_BUS.addListener(this::reloadData);
