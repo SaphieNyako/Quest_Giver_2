@@ -27,6 +27,9 @@ public class QuestLineData {
     private ServerPlayer player;
     private boolean accepted = false;
 
+    private boolean forcedEnd = false;
+
+
     public QuestLineData(String questLineId) {
         this.questLineId = questLineId;
     }
@@ -48,6 +51,13 @@ public class QuestLineData {
     }
 
     public void accept() {
+        //Simplified for Command option
+        if (!accepted && player != null) {
+            restart();
+        }
+    }
+
+/*    public void accept() {
 
         if (!accepted && player != null) {
 
@@ -71,7 +81,7 @@ public class QuestLineData {
 
             startNextQuests();
         }
-    }
+    } */
 
     @Nullable
     public QuestLine getQuestLine() {
@@ -254,6 +264,10 @@ public class QuestLineData {
 
     public boolean isFinished() {
 
+        if (forcedEnd) {
+            return true; //added for Force End
+        }
+
         QuestLine quests = getQuestLine();
 
         if (quests == null || !accepted) {
@@ -291,6 +305,101 @@ public class QuestLineData {
         }
 
         return end.display;
+    }
+
+    //Command Methods
+
+    public boolean forceCompleteQuest(ResourceLocation questId) {
+
+        QuestLine quests = getQuestLine();
+
+        if (quests == null || player == null) {
+            return false;
+        }
+
+        QuestProgress progress = activeQuests.remove(questId);
+
+        if (progress == null) {
+            return false;
+        }
+
+        if (!completedQuests.contains(questId)) {
+            completedQuests.add(questId);
+        }
+
+        if (!pendingCompletion.contains(questId)) {
+            pendingCompletion.add(questId);
+        }
+
+        startNextQuests();
+
+        player.displayClientMessage(Component.literal("Force completed quest: " + questId), false);
+
+        return true;
+    }
+
+    public boolean skipToNextQuests() {
+
+        if (activeQuests.isEmpty()) {
+            return false;
+        }
+
+        List<ResourceLocation> skipped = new ArrayList<>(activeQuests.keySet());
+
+        for (ResourceLocation questId : skipped) {
+            completedQuests.add(questId);
+        }
+
+        activeQuests.clear();
+
+        startNextQuests();
+
+        return true;
+    }
+
+    public void restart() {
+
+        if (player == null) {
+            return;
+        }
+        forcedEnd = false; //added for force end command
+
+        accepted = true;
+
+        pendingCompletion.clear();
+        completedQuests.clear();
+        activeQuests.clear();
+
+        QuestLine quests = getQuestLine();
+
+        if (quests == null) {
+            return;
+        }
+
+        Quest root = quests.getRootQuest();
+
+        if (root != null && root.tasks.isEmpty()) {
+
+            for (QuestReward reward : root.rewards) {
+                reward.grantReward(player);
+            }
+
+            completedQuests.add(root.id);
+        }
+
+        startNextQuests();
+    }
+
+    public void forceEnd() {
+
+        activeQuests.clear();
+        pendingCompletion.clear();
+
+        forcedEnd = true;
+    }
+
+    public Set<ResourceLocation> getActiveQuestIds() {
+        return Collections.unmodifiableSet(activeQuests.keySet());
     }
 
     public CompoundTag write() {

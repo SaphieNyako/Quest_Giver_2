@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,42 @@ public class QuestData {
 
         return list.build();
     }
+
+    //Command Methods
+
+    public boolean restartQuestLine(String questLineId) {
+
+        QuestLineData line = questLines.get(questLineId);
+
+        if (line == null) {
+            return false;
+        }
+
+        line.restart();
+        return true;
+    }
+
+    public boolean endQuestLine(String questLineId) {
+
+        QuestLineData line = questLines.get(questLineId);
+
+        if (line == null) {
+            return false;
+        }
+
+        line.forceEnd();
+        return true;
+    }
+
+    public void restartAllQuestLines() {
+        questLines.values().forEach(QuestLineData::restart);
+    }
+
+    public Map<String, QuestLineData> getQuestLines() {
+        return Collections.unmodifiableMap(questLines);
+    }
+
+
 
     // NBT SAVE
     public CompoundTag write() {
