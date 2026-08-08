@@ -58,7 +58,7 @@ public class QuestCommands {
 
     /**
      *  force complete
-     *  /questgiver complete <player> <questline> <quest>
+     *  /quest_giver complete <player> <quest_line> <quest>
      * force-completes one active quest
      * keeps its normal completion screen/rewards
      * unlocks following quests
@@ -90,7 +90,7 @@ public class QuestCommands {
 
     /**
      * skips the currently active quest(s)
-     * /questgiver next <player> <questline>
+     * /quest_giver next <player> <quest_line>
      * no rewards/completion page
      * unlocks whatever comes next
      */
@@ -113,7 +113,7 @@ public class QuestCommands {
 
     /**
      * resets one questline to its beginning
-     * /questgiver restart <player> <questline>
+     * /quest_giver restart <player> <quest_line>
      */
 
     private static int restartQuestLine(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -133,7 +133,7 @@ public class QuestCommands {
 
     /**
      * resets all questlines to its beginning
-     * /questgiver restart_all <player>
+     * /quest_giver restart_all <player>
      */
 
     private static int restartAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -149,12 +149,12 @@ public class QuestCommands {
     /**
      * immediately ends one questline
      * next interaction shows end.json
-     * /questgiver end <player> <questline>
+     * /quest_giver end <player> <quest_line>
      */
     private static int endQuestLine(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
         ServerPlayer player = EntityArgument.getPlayer(context, "player");
-        String id = StringArgumentType.getString(context, "questline");
+        String id = StringArgumentType.getString(context, "quest_line");
 
         if (!QuestData.get(player).endQuestLine(id)) {
             return 0;
@@ -180,6 +180,8 @@ public class QuestCommands {
         context.getSource().sendSuccess(() -> Component.literal("Active quests for " + player.getName().getString() + ":"), false);
 
         int activeCount = 0;
+        int completedCount = 0;
+
 
         for (Map.Entry<String, QuestLineData> entry : questLines.entrySet()) {
 
@@ -204,7 +206,27 @@ public class QuestCommands {
             context.getSource().sendSuccess(() -> Component.literal("No active quests."), false);
         }
 
-        return activeCount;
+        // COMPLETED QUEST LINES
+        context.getSource().sendSuccess(() -> Component.literal("Completed Quest Lines:"), false);
+
+        for (Map.Entry<String, QuestLineData> entry : questLines.entrySet()) {
+
+            String questLineId = entry.getKey();
+            QuestLineData line = entry.getValue();
+
+            if (!line.isFinished()) {
+                continue;
+            }
+
+            completedCount++;
+
+            context.getSource().sendSuccess(() -> Component.literal("  - " + questLineId), false);
+        }
+
+        if (completedCount == 0) {context.getSource().sendSuccess(() -> Component.literal("  None"), false);
+        }
+
+        return activeCount + completedCount;
     }
 
 }
