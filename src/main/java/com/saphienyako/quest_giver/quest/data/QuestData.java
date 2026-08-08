@@ -10,6 +10,7 @@ import com.saphienyako.quest_giver.quest.QuestLine;
 import com.saphienyako.quest_giver.quest.QuestManager;
 import com.saphienyako.quest_giver.quest.task.TaskType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
@@ -111,6 +112,13 @@ public class QuestData {
         }
 
         return list.build();
+    }
+
+    //Quest Completed Task Method
+    public boolean hasCompletedQuest(String questLineId, ResourceLocation questId) {
+        QuestLineData line = questLines.get(questLineId);
+
+        return line != null && line.hasCompletedQuest(questId);
     }
 
     //Command Methods

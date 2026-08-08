@@ -1,6 +1,7 @@
 package com.saphienyako.quest_giver;
 
 
+import com.saphienyako.quest_giver.events.QuestCompletionEvent;
 import com.saphienyako.quest_giver.quest.QuestLinkManager;
 import com.saphienyako.quest_giver.quest.data.QuestData;
 import com.saphienyako.quest_giver.quest.data.QuestLinkData;
@@ -17,7 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -235,6 +235,13 @@ public class EventListener {
 
             player.swing(event.getHand(), true);
         }
+    }
+
+    @SubscribeEvent
+    public void questCompleted(QuestCompletionEvent event) {
+        ServerPlayer player = event.getEntity();
+        QuestCompleteTask.Context context = new QuestCompleteTask.Context(event.getQuestLineId(), event.getQuest().id);
+        QuestData.get(player).checkComplete(QuestCompleteTask.INSTANCE, context);
     }
 
     //TODO Tree Grow

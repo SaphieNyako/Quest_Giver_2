@@ -13,7 +13,6 @@ import com.saphienyako.quest_giver.quest.reward.CommandReward;
 import com.saphienyako.quest_giver.quest.reward.ItemReward;
 import com.saphienyako.quest_giver.quest.reward.RewardTypes;
 import com.saphienyako.quest_giver.quest.task.*;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +26,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -70,7 +68,8 @@ public class QuestGiver
         TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"tame"), AnimalTameTask.INSTANCE);
         TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"biome"), BiomeTask.INSTANCE);
         TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"structure"), StructureTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
+        //  TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
+        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "quest_completed"), QuestCompleteTask.INSTANCE);
         TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"special_task"), SpecialTask.INSTANCE);
 
         RewardTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "item"), ItemReward.INSTANCE);

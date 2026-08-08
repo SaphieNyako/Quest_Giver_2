@@ -4,14 +4,16 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.saphienyako.quest_giver.quest.Quest;
 import com.saphienyako.quest_giver.quest.QuestLine;
+import com.saphienyako.quest_giver.quest.QuestTask;
+import com.saphienyako.quest_giver.quest.task.QuestCompleteTask;
 import com.saphienyako.quest_giver.quest.task.TaskType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class QuestProgress {
@@ -53,6 +55,41 @@ public class QuestProgress {
         return quests.getQuest(this.quest) != null;
     }
 
+    public boolean checkExistingState(ServerPlayer player, QuestLine quests) {
+
+        Quest quest = quests.getQuest(this.quest);
+
+        if (quest == null) {
+            return false;
+        }
+
+        boolean changed = false;
+
+        for (int i = 0; i < quest.tasks.size(); i++) {
+
+            QuestTask task = quest.tasks.get(i);
+
+            // Already satisfied
+            if (taskProgress.getOrDefault(i, 0) >= task.times) {
+                continue;
+            }
+
+            Optional<QuestCompleteTask.Requirement> requirement =
+                    task.getQuestValueFor(QuestCompleteTask.INSTANCE);
+
+            if (requirement.isPresent() && QuestCompleteTask.INSTANCE.isAlreadyCompleted(player, requirement.get())) {
+
+                // QuestCompletedTask is non-repeatable,
+                // so this satisfies this task completely.
+                taskProgress.put(i, task.times);
+
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
     public boolean shouldBeComplete(QuestLine quests) {
         Quest quest = quests.getQuest(this.quest);
         if (quest != null) {
@@ -67,6 +104,8 @@ public class QuestProgress {
             return false;
         }
     }
+
+
 
     public static final Codec<QuestProgress> CODEC =
             RecordCodecBuilder.create(instance -> instance.group(

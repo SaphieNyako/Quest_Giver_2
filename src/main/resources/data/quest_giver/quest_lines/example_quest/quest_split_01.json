@@ -1,14 +1,6 @@
 {
   "parent": "quest_giver:quest_03",
-  "complete": {
-    "description": {
-      "translate": "Aaaaw!"
-    },
-    "title": {
-      "translate": "Pet Animal Example"
-    }
-  },
-  "icon": "minecraft:carrot",
+   "icon": "minecraft:carrot",
   "start": {
     "description": {
       "translate": "The Quest Line has more Quests. Why don't you pet your Wolf?"
@@ -22,5 +14,13 @@
       "id": "quest_giver:pet",
       "type": "minecraft:wolf"
     }
-  ]
+  ],
+  "complete": {
+  "description": {
+    "translate": "Aaaaw!"
+  },
+  "title": {
+    "translate": "Pet Animal Example"
+  }
+}
 }
