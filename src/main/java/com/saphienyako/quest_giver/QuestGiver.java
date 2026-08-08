@@ -69,7 +69,7 @@ public class QuestGiver
         TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"biome"), BiomeTask.INSTANCE);
         TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"structure"), StructureTask.INSTANCE);
         //  TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "quest_completed"), QuestCompleteTask.INSTANCE);
+        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "quest_complete"), QuestCompleteTask.INSTANCE);
         TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"special_task"), SpecialTask.INSTANCE);
 
         RewardTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "item"), ItemReward.INSTANCE);
