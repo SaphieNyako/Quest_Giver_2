@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.saphienyako.quest_giver.quest.Quest;
 import com.saphienyako.quest_giver.quest.QuestLine;
 import com.saphienyako.quest_giver.quest.QuestTask;
-import com.saphienyako.quest_giver.quest.task.QuestCompleteTask;
+import com.saphienyako.quest_giver.quest.task.CompleteQuestTask;
 import com.saphienyako.quest_giver.quest.task.TaskType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -74,10 +74,10 @@ public class QuestProgress {
                 continue;
             }
 
-            Optional<QuestCompleteTask.Requirement> requirement =
-                    task.getQuestValueFor(QuestCompleteTask.INSTANCE);
+            Optional<CompleteQuestTask.Requirement> requirement =
+                    task.getQuestValueFor(CompleteQuestTask.INSTANCE);
 
-            if (requirement.isPresent() && QuestCompleteTask.INSTANCE.isAlreadyCompleted(player, requirement.get())) {
+            if (requirement.isPresent() && CompleteQuestTask.INSTANCE.isAlreadyCompleted(player, requirement.get())) {
 
                 // QuestCompletedTask is non-repeatable,
                 // so this satisfies this task completely.

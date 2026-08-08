@@ -240,8 +240,8 @@ public class EventListener {
     @SubscribeEvent
     public void questCompleted(QuestCompletionEvent event) {
         ServerPlayer player = event.getEntity();
-        QuestCompleteTask.Context context = new QuestCompleteTask.Context(event.getQuestLineId(), event.getQuest().id);
-        QuestData.get(player).checkComplete(QuestCompleteTask.INSTANCE, context);
+        CompleteQuestTask.Context context = new CompleteQuestTask.Context(event.getQuestLineId(), event.getQuest().id);
+        QuestData.get(player).checkComplete(CompleteQuestTask.INSTANCE, context);
     }
 
     //TODO Tree Grow
