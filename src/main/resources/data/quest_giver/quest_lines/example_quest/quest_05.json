@@ -11,7 +11,7 @@
   },
   "tasks": [
     {
-      "id": "quest_giver:quest_complete",
+      "id": "quest_giver:complete_quest",
       "quest_line": "wolf_quest",
       "quest": "quest_wolfie_03"
     }

@@ -10,14 +10,12 @@ import com.saphienyako.quest_giver.screen.SelectQuestScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -223,8 +221,8 @@ public class EventListener {
     @SubscribeEvent
     public void questCompleted(QuestCompletionEvent event) {
         ServerPlayer player = event.getEntity();
-        QuestCompleteTask.Context context = new QuestCompleteTask.Context(event.getQuestLineId(), event.getQuest().id);
-        QuestData.get(player).checkComplete(QuestCompleteTask.INSTANCE, context);
+        CompleteQuestTask.Context context = new CompleteQuestTask.Context(event.getQuestLineId(), event.getQuest().id);
+        QuestData.get(player).checkComplete(CompleteQuestTask.INSTANCE, context);
     }
 
     //TODO Tree Grow

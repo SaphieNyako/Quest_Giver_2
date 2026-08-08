@@ -42,10 +42,10 @@ public class QuestCommands {
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(QuestCommands::restartAll)))
 
-                .then(Commands.literal("end")
+              /*  .then(Commands.literal("end")
                         .then(Commands.argument("player", EntityArgument.player())
                                 .then(Commands.argument("quest_line", StringArgumentType.word())
-                                        .executes(QuestCommands::endQuestLine))))
+                                        .executes(QuestCommands::endQuestLine)))) */
 
                 .then(Commands.literal("show")
                         .then(Commands.literal("active")

@@ -6,11 +6,11 @@ import com.saphienyako.quest_giver.quest.data.QuestData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-public class QuestCompleteTask implements TaskType<QuestCompleteTask.Requirement, QuestCompleteTask.Context> {
+public class CompleteQuestTask implements TaskType<CompleteQuestTask.Requirement, CompleteQuestTask.Context> {
 
-    public static final QuestCompleteTask INSTANCE = new QuestCompleteTask();
+    public static final CompleteQuestTask INSTANCE = new CompleteQuestTask();
 
-    private QuestCompleteTask() {}
+    private CompleteQuestTask() {}
 
     public record Requirement(String questLine, ResourceLocation quest) {}
 
