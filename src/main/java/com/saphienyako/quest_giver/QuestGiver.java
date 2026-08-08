@@ -7,6 +7,7 @@ import com.saphienyako.quest_giver.data.SpecialTaskActionLoader;
 import com.saphienyako.quest_giver.entity.ModEntities;
 import com.saphienyako.quest_giver.entity.QuestVillagerEntity;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
+import com.saphienyako.quest_giver.quest.QuestCommands;
 import com.saphienyako.quest_giver.quest.QuestManager;
 import com.saphienyako.quest_giver.quest.reward.CommandReward;
 import com.saphienyako.quest_giver.quest.reward.ItemReward;
@@ -30,6 +31,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -53,10 +55,9 @@ public class QuestGiver
 
         //Datapack for Quests
         NeoForge.EVENT_BUS.addListener(this::reloadData);
+        NeoForge.EVENT_BUS.addListener(this::registerCommands);
         //Player Capabilities
         ModAttachments.register(modEventBus);
-       // NeoForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityQuests::attachPlayerCaps);
-      //  NeoForge.EVENT_BUS.addListener(CapabilityQuests::playerCopy);
 
         NeoForge.EVENT_BUS.register(new EventListener());
 
@@ -96,6 +97,10 @@ public class QuestGiver
         event.addListener(new SpecialTaskActionLoader());
         event.addListener(QuestManager.createReloadListener());
         event.addListener(new QuestLinkDataLoader());
+    }
+
+    private void registerCommands(RegisterCommandsEvent event) {
+        QuestCommands.register(event.getDispatcher());
     }
 
     @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
