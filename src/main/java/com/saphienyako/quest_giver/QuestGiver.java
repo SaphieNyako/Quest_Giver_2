@@ -7,6 +7,7 @@ import com.saphienyako.quest_giver.data.SpecialTaskActionLoader;
 import com.saphienyako.quest_giver.entity.ModEntities;
 import com.saphienyako.quest_giver.entity.QuestVillagerEntity;
 import com.saphienyako.quest_giver.network.QuestGiverNetwork;
+import com.saphienyako.quest_giver.quest.QuestCommands;
 import com.saphienyako.quest_giver.quest.QuestManager;
 import com.saphienyako.quest_giver.quest.data.CapabilityQuests;
 import com.saphienyako.quest_giver.quest.reward.CommandReward;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -52,6 +54,8 @@ public class QuestGiver
 
         //Datapack for Quests
         MinecraftForge.EVENT_BUS.addListener(this::reloadData);
+
+        MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
         //Player Capabilities
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityQuests::attachPlayerCaps);
         MinecraftForge.EVENT_BUS.addListener(CapabilityQuests::playerCopy);
@@ -81,6 +85,10 @@ public class QuestGiver
     }
 
     //Creative Tab in 1.19.2 is done in the Items Properties.
+
+    private void registerCommands(RegisterCommandsEvent event) {
+        QuestCommands.register(event.getDispatcher());
+    }
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
