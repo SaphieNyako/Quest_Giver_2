@@ -179,6 +179,7 @@ public class QuestCommands {
         context.getSource().sendSuccess(() -> Component.literal("Active quests for " + player.getName().getString() + ":"), false);
 
         int activeCount = 0;
+        int completedCount = 0;
 
         for (Map.Entry<String, QuestLineData> entry : questLines.entrySet()) {
 
@@ -203,7 +204,28 @@ public class QuestCommands {
             context.getSource().sendSuccess(() -> Component.literal("No active quests."), false);
         }
 
-        return activeCount;
+        // COMPLETED QUEST LINES
+        context.getSource().sendSuccess(() -> Component.literal("Completed Quest Lines:"), false);
+
+        for (Map.Entry<String, QuestLineData> entry : questLines.entrySet()) {
+
+            String questLineId = entry.getKey();
+            QuestLineData line = entry.getValue();
+
+            if (!line.isFinished()) {
+                continue;
+            }
+
+            completedCount++;
+
+            context.getSource().sendSuccess(() -> Component.literal("  - " + questLineId), false);
+        }
+
+        if (completedCount == 0) {
+            context.getSource().sendSuccess(() -> Component.literal("  None"), false);
+        }
+
+        return activeCount + completedCount;
     }
 
 }
