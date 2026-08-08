@@ -1,26 +1,27 @@
 {
   "parent": "quest_giver:quest_04",
-  "complete": {
-    "description": {
-      "translate": "Thanks for naming me."
-    },
-    "title": {
-      "translate": "Special Task Example"
-    }
-  },
-  "icon": "minecraft:name_tag",
+  "icon": "minecraft:book",
   "start": {
-    "description": {
-      "translate": "Give me a name please."
-    },
     "title": {
-      "translate": "Special Task Example"
+      "translate": "Wait for Wolfie"
+    },
+    "description": {
+      "translate": "Finish helping Wolfie before continuing."
     }
   },
   "tasks": [
     {
-      "id": "quest_giver:special_task",
-      "action": "special_task_example"
+      "id": "quest_giver:quest_complete",
+      "quest_line": "wolf_quest",
+      "quest": "quest_wolfie_03"
     }
-  ]
+  ],
+  "complete": {
+    "description": {
+      "translate": "Thank you for Helping Wolfie"
+    },
+    "title": {
+      "translate": "Pet Animal Example"
+    }
+  }
 }

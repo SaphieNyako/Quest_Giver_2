@@ -1,5 +1,6 @@
 package com.saphienyako.quest_giver;
 
+import com.saphienyako.quest_giver.events.QuestCompletionEvent;
 import com.saphienyako.quest_giver.quest.QuestLinkManager;
 import com.saphienyako.quest_giver.quest.data.QuestData;
 import com.saphienyako.quest_giver.quest.data.QuestLinkData;
@@ -217,6 +218,13 @@ public class EventListener {
 
             player.swing(event.getHand(), true);
         }
+    }
+
+    @SubscribeEvent
+    public void questCompleted(QuestCompletionEvent event) {
+        ServerPlayer player = event.getEntity();
+        QuestCompleteTask.Context context = new QuestCompleteTask.Context(event.getQuestLineId(), event.getQuest().id);
+        QuestData.get(player).checkComplete(QuestCompleteTask.INSTANCE, context);
     }
 
     //TODO Tree Grow

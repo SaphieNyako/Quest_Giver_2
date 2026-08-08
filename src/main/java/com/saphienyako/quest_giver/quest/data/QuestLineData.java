@@ -146,7 +146,7 @@ public class QuestLineData {
                 for (QuestReward reward : quest.rewards) {
                     reward.grantReward(player);
                 }
-                MinecraftForge.EVENT_BUS.post(new QuestCompletionEvent(this.player, quest));
+                MinecraftForge.EVENT_BUS.post(new QuestCompletionEvent(this.player,this.questLineId, quest));
                 return display;
             } else {
                 return null;
@@ -230,7 +230,7 @@ public class QuestLineData {
 
         QuestLine quests = getQuestLine();
 
-        boolean hasEmptyQuests = false;
+        boolean shouldCheckNextQuests = false;
 
         if (quests != null) {
 
@@ -243,7 +243,7 @@ public class QuestLineData {
                         pendingCompletion.add(newQuest.id);
                         completedQuests.add(newQuest.id);
 
-                        hasEmptyQuests = true;
+                        shouldCheckNextQuests = true;
                     }
 
                 } else {
@@ -252,12 +252,28 @@ public class QuestLineData {
 
                         QuestProgress progress = new QuestProgress(newQuest.id);
                         activeQuests.put(newQuest.id, progress);
+
+                        progress.checkExistingState(player, quests);
+
+                        // The quest may already be complete because of existing player state
+                        if (progress.shouldBeComplete(quests)) {
+
+                            activeQuests.remove(newQuest.id);
+
+                            if (!pendingCompletion.contains(newQuest.id)) {
+                                pendingCompletion.add(newQuest.id);
+                            }
+
+                            completedQuests.add(newQuest.id);
+
+                            shouldCheckNextQuests = true;
+                        }
                     }
                 }
             }
         }
 
-        if (hasEmptyQuests) {
+        if (shouldCheckNextQuests) {
             startNextQuests();
         }
     }
@@ -305,6 +321,13 @@ public class QuestLineData {
         }
 
         return end.display;
+    }
+
+
+    //Complete Quest Task Method
+
+    public boolean hasCompletedQuest(ResourceLocation questId) {
+        return completedQuests.contains(questId);
     }
 
     //Command Methods

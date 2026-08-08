@@ -72,7 +72,8 @@ public class QuestGiver
         TaskTypes.register(new ResourceLocation(MOD_ID,"tame"), AnimalTameTask.INSTANCE);
         TaskTypes.register(new ResourceLocation(MOD_ID,"biome"), BiomeTask.INSTANCE);
         TaskTypes.register(new ResourceLocation(MOD_ID,"structure"), StructureTask.INSTANCE);
-        TaskTypes.register(new ResourceLocation(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
+       // TaskTypes.register(new ResourceLocation(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID, "quest_complete"), QuestCompleteTask.INSTANCE);
         TaskTypes.register(new ResourceLocation(MOD_ID,"special_task"), SpecialTask.INSTANCE);
 
         RewardTypes.register(new ResourceLocation(MOD_ID, "item"), ItemReward.INSTANCE);
