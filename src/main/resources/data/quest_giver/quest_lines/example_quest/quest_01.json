@@ -20,9 +20,7 @@
   "tasks": [
     {
       "id": "quest_giver:gift",
-      "item": {
-        "item": "minecraft:iron_sword"
-      },
+      "item": "minecraft:iron_sword",
       "entity": "quest_giver:quest_villager"
     }
   ]

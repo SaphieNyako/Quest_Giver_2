@@ -21,9 +21,7 @@
     {
       "amount": 2,
       "id": "quest_giver:item_stack",
-      "item": {
-        "item": "minecraft:cooked_beef"
-      }
+      "item": "minecraft:cooked_beef"
     }
   ],
   "rewards": [

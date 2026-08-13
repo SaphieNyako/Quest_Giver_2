@@ -1,5 +1,6 @@
 package com.saphienyako.quest_giver.network.handler;
 
+import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.network.OpenQuestDisplayMessage;
 import com.saphienyako.quest_giver.quest.data.ClientQuests;
 import com.saphienyako.quest_giver.screen.DisplayQuestScreen;
@@ -12,6 +13,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public class OpenQuestDisplayHandler {
 
     public static void handle(OpenQuestDisplayMessage msg, IPayloadContext context) {
+        QuestGiver.LOGGER.info("Received OpenQuestDisplayMessage");
         if (msg.display().sound != null) {
             Player player = Minecraft.getInstance().player;
 

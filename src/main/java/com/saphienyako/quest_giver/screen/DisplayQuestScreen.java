@@ -97,7 +97,8 @@ public class DisplayQuestScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
       //  graphics.pose().pushPose();
       //  this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
+
+    ////    this.extractBackground(graphics, mouseX, mouseY, partialTicks);
 
 
      //   graphics.pose().translate(0, 0, 20);

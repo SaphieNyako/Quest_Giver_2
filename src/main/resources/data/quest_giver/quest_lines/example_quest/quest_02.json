@@ -20,9 +20,7 @@
   "tasks": [
     {
       "id": "quest_giver:craft",
-      "item": {
-        "item": "minecraft:smoker"
-      }
+      "item": "minecraft:smoker"
     }
   ]
 }

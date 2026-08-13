@@ -21,9 +21,7 @@
     {
       "times": 2,
       "id": "quest_giver:gift",
-      "item": {
-        "item": "minecraft:cooked_beef"
-      },
+      "item": "minecraft:cooked_beef",
       "entity": "minecraft:wolf",
       "name": "Wolfie"
     }

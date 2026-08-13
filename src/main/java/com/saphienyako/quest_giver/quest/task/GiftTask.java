@@ -66,10 +66,24 @@ public class GiftTask implements TaskType<GiftTask.GiftRequirement, GiftTask.Gif
 
     @Override
     public GiftRequirement fromJson(JsonObject json) {
+        JsonElement itemElement = json.get("item");
 
-        Ingredient ingredient = Ingredient.CODEC
-                .parse(JsonOps.INSTANCE, json.get("item"))
-                .getOrThrow(JsonSyntaxException::new);
+        Ingredient ingredient;
+
+        if (itemElement.isJsonPrimitive()) {
+            Identifier itemId = Identifier.parse(itemElement.getAsString());
+
+            Item item = BuiltInRegistries.ITEM
+                    .get(itemId)
+                    .map(Holder::value)
+                    .orElseThrow(() -> new JsonSyntaxException("Unknown item: " + itemId));
+
+            ingredient = Ingredient.of(item);
+        } else {
+            ingredient = Ingredient.CODEC
+                    .parse(JsonOps.INSTANCE, itemElement)
+                    .getOrThrow(JsonSyntaxException::new);
+        }
 
         Identifier entity = null;
 
@@ -88,14 +102,32 @@ public class GiftTask implements TaskType<GiftTask.GiftRequirement, GiftTask.Gif
 
     @Override
     public JsonObject toJson(GiftRequirement element) {
-
         JsonObject json = new JsonObject();
 
-        JsonElement ingredientJson = Ingredient.CODEC
-                .encodeStart(JsonOps.INSTANCE, element.ingredient())
-                .getOrThrow(JsonSyntaxException::new);
+        if (!element.ingredient().isCustom()) {
+            List<Holder<Item>> items = element.ingredient()
+                    .getValues()
+                    .stream()
+                    .toList();
 
-        json.add("item", ingredientJson);
+            if (items.size() == 1) {
+                Identifier itemId = BuiltInRegistries.ITEM.getKey(items.getFirst().value());
+
+                json.addProperty("item", itemId.toString());
+            } else {
+                JsonElement ingredientJson = Ingredient.CODEC
+                        .encodeStart(JsonOps.INSTANCE, element.ingredient())
+                        .getOrThrow(JsonSyntaxException::new);
+
+                json.add("item", ingredientJson);
+            }
+        } else {
+            JsonElement ingredientJson = Ingredient.CODEC
+                    .encodeStart(JsonOps.INSTANCE, element.ingredient())
+                    .getOrThrow(JsonSyntaxException::new);
+
+            json.add("item", ingredientJson);
+        }
 
         if (element.entity() != null) {
             json.addProperty("entity", element.entity().toString());

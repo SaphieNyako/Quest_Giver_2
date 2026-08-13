@@ -1,26 +1,26 @@
 package com.saphienyako.quest_giver.quest.task;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CraftTask implements TaskType<Ingredient, ItemStack> {
 
     public static final CraftTask INSTANCE = new CraftTask();
 
-    private CraftTask() { }
+    private CraftTask() {
+    }
 
     @Override
     public Class<Ingredient> element() {
@@ -33,7 +33,11 @@ public class CraftTask implements TaskType<Ingredient, ItemStack> {
     }
 
     @Override
-    public boolean checkCompleted(ServerPlayer player, Ingredient element, ItemStack match) {
+    public boolean checkCompleted(
+            ServerPlayer player,
+            Ingredient element,
+            ItemStack match
+    ) {
         return element.test(match);
     }
 
@@ -41,48 +45,40 @@ public class CraftTask implements TaskType<Ingredient, ItemStack> {
     public Ingredient fromJson(JsonObject json) {
         JsonElement elem = json.get("item");
 
-        List<Item> items = new ArrayList<>();
-
-        if (elem.isJsonArray()) {
-            JsonArray array = elem.getAsJsonArray();
-
-            for (JsonElement entry : array) {
-                String itemId = entry.getAsString();
-
-                BuiltInRegistries.ITEM
-                        .get(Identifier.tryParse(itemId))
-                        .map(Holder::value)
-                        .ifPresent(items::add);
-            }
-        } else if (elem.isJsonObject()) {
-            String itemId = elem.getAsJsonObject()
-                    .get("item")
-                    .getAsString();
-
-            BuiltInRegistries.ITEM
-                    .get(Identifier.tryParse(itemId))
-                    .map(Holder::value)
-                    .ifPresent(items::add);
+        if (!elem.isJsonPrimitive()) {
+            throw new JsonSyntaxException("Craft task item must be an item id, got: " + elem);
         }
 
-        return Ingredient.of(items.stream());
-    }
+        Identifier itemId = Identifier.parse(elem.getAsString());
 
+        Item item = BuiltInRegistries.ITEM
+                .get(itemId)
+                .map(Holder::value)
+                .orElseThrow(() -> new JsonSyntaxException("Unknown item: " + itemId));
+
+        return Ingredient.of(item);
+    }
 
     @Override
     public JsonObject toJson(Ingredient element) {
         JsonObject json = new JsonObject();
-        JsonArray array = new JsonArray();
 
-        element.getValues().stream().forEach(holder -> {
-            Identifier key = BuiltInRegistries.ITEM.getKey(holder.value());
+        List<Holder<Item>> items = element.getValues()
+                .stream()
+                .toList();
 
-            if (key != null) {
-                array.add(key.toString());
-            }
-        });
+        if (items.size() != 1) {
+            throw new IllegalStateException("CraftTask currently expects exactly one item ingredient");
+        }
 
-        json.add("item", array);
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(items.getFirst().value());
+
+        if (itemId == null) {
+            throw new IllegalStateException("Craft task item is not registered");
+        }
+
+        json.addProperty("item", itemId.toString());
+
         return json;
     }
 

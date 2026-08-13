@@ -190,12 +190,13 @@ public class QuestGiverAPI {
 
 
     private static void sendQuestDisplay(ServerPlayer player, QuestDisplay display, boolean isNew, int entityId, String questLineId, String backgroundName, boolean dismiss, double scale) {
+        QuestGiver.LOGGER.info("Sending quest display to {}", player.getName().getString());
         PacketDistributor.sendToPlayer(player,new OpenQuestDisplayMessage(display, isNew, entityId, questLineId, backgroundName, dismiss, scale));
     }
 
     private static void sendQuestSelection(ServerPlayer player, List<SelectableQuest> quests, int entityId, String questLineId, String backgroundName, boolean dismiss, double scale) {
-        PacketDistributor.sendToPlayer(player,
-                new OpenQuestSelectionMessage(quests, entityId, questLineId, backgroundName, dismiss, scale));
+        QuestGiver.LOGGER.info("Sending quest display to {}", player.getName().getString());
+        PacketDistributor.sendToPlayer(player, new OpenQuestSelectionMessage(quests, entityId, questLineId, backgroundName, dismiss, scale));
     }
 
     /**
