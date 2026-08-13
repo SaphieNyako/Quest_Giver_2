@@ -3,7 +3,7 @@ package com.saphienyako.quest_giver.quest.task;
 import com.google.gson.JsonObject;
 import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.quest.data.QuestData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public class CompleteQuestTask implements TaskType<CompleteQuestTask.Requirement, CompleteQuestTask.Context> {
@@ -12,9 +12,9 @@ public class CompleteQuestTask implements TaskType<CompleteQuestTask.Requirement
 
     private CompleteQuestTask() {}
 
-    public record Requirement(String questLine, ResourceLocation quest) {}
+    public record Requirement(String questLine, Identifier quest) {}
 
-    public record Context(String questLine, ResourceLocation quest) {}
+    public record Context(String questLine, Identifier quest) {}
 
     @Override
     public Class<Requirement> element() {
@@ -41,7 +41,7 @@ public class CompleteQuestTask implements TaskType<CompleteQuestTask.Requirement
         String questLine = json.get("quest_line").getAsString();
         String questName = json.get("quest").getAsString();
 
-        ResourceLocation quest = questName.contains(":") ? ResourceLocation.parse(questName) : ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, questName);
+        Identifier quest = questName.contains(":") ? Identifier.parse(questName) : Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, questName);
         return new Requirement(questLine, quest);
     }
 

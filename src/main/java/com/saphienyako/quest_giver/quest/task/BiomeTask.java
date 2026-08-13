@@ -1,13 +1,13 @@
 package com.saphienyako.quest_giver.quest.task;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Objects;
 
 // Test type must be a resource locations as biomes are handled in a weird way
-public class BiomeTask implements TaskType<ResourceLocation, ResourceLocation> {
+public class BiomeTask implements TaskType<Identifier, Identifier> {
 
     public static final BiomeTask INSTANCE = new BiomeTask();
 
@@ -16,23 +16,23 @@ public class BiomeTask implements TaskType<ResourceLocation, ResourceLocation> {
     }
 
     @Override
-    public Class<ResourceLocation> element() {
-        return ResourceLocation.class;
+    public Class<Identifier> element() {
+        return Identifier.class;
     }
 
     @Override
-    public Class<ResourceLocation> testType() {
-        return ResourceLocation.class;
+    public Class<Identifier> testType() {
+        return Identifier.class;
     }
 
     @Override
-    public boolean checkCompleted(ServerPlayer player, ResourceLocation element, ResourceLocation match) {
+    public boolean checkCompleted(ServerPlayer player, Identifier element, Identifier match) {
         return Objects.equals(element, match);
     }
 
     @Override
-    public ResourceLocation fromJson(JsonObject json) {
-        ResourceLocation rl = ResourceLocation.tryParse(json.get("biome").getAsString());
+    public Identifier fromJson(JsonObject json) {
+        Identifier rl = Identifier.tryParse(json.get("biome").getAsString());
         if (rl == null) {
             throw new IllegalStateException("Can't load feywild quest task: invalid resource: " + json.get("biome"));
         }
@@ -40,7 +40,7 @@ public class BiomeTask implements TaskType<ResourceLocation, ResourceLocation> {
     }
 
     @Override
-    public JsonObject toJson(ResourceLocation element) {
+    public JsonObject toJson(Identifier element) {
         JsonObject json = new JsonObject();
         json.addProperty("biome", element.toString());
         return json;

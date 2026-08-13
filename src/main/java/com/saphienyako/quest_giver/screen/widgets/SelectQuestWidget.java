@@ -1,24 +1,19 @@
 package com.saphienyako.quest_giver.screen.widgets;
 
 import com.saphienyako.quest_giver.QuestGiver;
-import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.network.SelectQuestMessage;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import com.saphienyako.quest_giver.screen.util.TextProcessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.PacketDistributor;
-
-import javax.annotation.Nonnull;
-import java.util.Map;
-@OnlyIn(Dist.CLIENT)
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class SelectQuestWidget extends Button {
 
     public static final int WIDTH = 210;
@@ -41,23 +36,27 @@ public class SelectQuestWidget extends Button {
     }
 
     @Override
-    public void onPress() {
-        super.onPress();
-        PacketDistributor.sendToServer(new SelectQuestMessage(this.questLineId, this.quest.id(), this.backgroundName, this.dismiss, this.scale));
+    public void onPress(InputWithModifiers input) {
+        super.onPress(input);
+        ClientPacketDistributor.sendToServer(new SelectQuestMessage(this.questLineId, this.quest.id(), this.backgroundName, this.dismiss, this.scale));
     }
 
     @Override
-    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
-        
-        graphics.blit(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName + "_background_03.png"), this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
-        
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 10);
-        graphics.renderFakeItem(this.iconStack, this.getX() + 20, this.getY() + (this.height - 16) / 2);
-        
-        graphics.drawString(Minecraft.getInstance().font, quest.display().title, this.getX() + 38, this.getY() + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFF, true);
-        graphics.pose().popPose();
+
+     //   graphics.blit(Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName + "_background_03.png"), this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_03.png"),
+                this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT, 256, 256);
+
+      //  graphics.pose().pushPose();
+     //   graphics.pose().translate(0, 0, 10);
+      //  graphics.renderFakeItem(this.iconStack, this.getX() + 20, this.getY() + (this.height - 16) / 2);
+        graphics.fakeItem(this.iconStack, this.getX() + 20, this.getY() + (this.height - 16) / 2);
+
+    //    graphics.text(Minecraft.getInstance().font, quest.display().title, this.getX() + 38, this.getY() + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFF, true);
+    //    graphics.pose().popPose();
+        graphics.text(font, quest.display().title, this.getX() + 38, this.getY() + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFF, true);
     }
 }

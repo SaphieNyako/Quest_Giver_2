@@ -5,12 +5,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.JsonOps;
 import com.saphienyako.quest_giver.quest.util.IngredientStack;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemStackTask implements TaskType<IngredientStack, ItemStack> {
 
@@ -72,11 +74,15 @@ public class ItemStackTask implements TaskType<IngredientStack, ItemStack> {
     @Nullable
     @Override
     public Item icon(IngredientStack element) {
-        ItemStack[] matching = element.ingredient().getItems();
-        if (matching.length == 1 && !matching[0].isEmpty()) {
-            return matching[0].getItem();
-        } else {
-            return null;
+        List<Holder<Item>> matching = element.ingredient()
+                .getValues()
+                .stream()
+                .toList();
+
+        if (matching.size() == 1) {
+            return matching.getFirst().value();
         }
+
+        return null;
     }
 }

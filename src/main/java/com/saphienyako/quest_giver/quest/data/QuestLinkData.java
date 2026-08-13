@@ -2,22 +2,23 @@ package com.saphienyako.quest_giver.quest.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+
 
 import javax.annotation.Nullable;
 
 public class QuestLinkData {
 
     public final String questLineId;
-    public final ResourceLocation entityId;
+    public final Identifier entityId;
     @Nullable
     public final String name;
     public final String backgroundName;
     public final double scale;
     @Nullable
-    public final ResourceLocation interactionItem;
+    public final Identifier interactionItem;
 
-    public QuestLinkData(String questLineId, ResourceLocation entityId, @Nullable String name, String backgroundName,@Nullable ResourceLocation interactionItem, double scale) {
+    public QuestLinkData(String questLineId, Identifier entityId, @Nullable String name, String backgroundName,@Nullable Identifier interactionItem, double scale) {
         this.questLineId = questLineId;
         this.entityId = entityId;
         this.name = name;
@@ -30,10 +31,10 @@ public class QuestLinkData {
     public static QuestLinkData fromJson(JsonElement element) {
         JsonObject json = element.getAsJsonObject();
         String questLineId = json.get("quest_line_id").getAsString();
-        ResourceLocation entityId = ResourceLocation.tryParse(json.get("entity_id").getAsString());
+        Identifier entityId = Identifier.tryParse(json.get("entity_id").getAsString());
         String name = json.has("name") ? json.get("name").getAsString() : null;
         String backgroundName = json.has("background_name") ? json.get("background_name").getAsString() : null;
-        ResourceLocation interactionItem = json.has("interaction_item") ? ResourceLocation.tryParse(json.get("interaction_item").getAsString()) : null;
+        Identifier interactionItem = json.has("interaction_item") ? Identifier.tryParse(json.get("interaction_item").getAsString()) : null;
         double scale = json.has("scale") ? json.get("scale").getAsDouble() : 1.5;
         return new QuestLinkData(questLineId, entityId, name, backgroundName,interactionItem, scale);
     }

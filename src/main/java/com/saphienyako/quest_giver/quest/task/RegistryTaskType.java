@@ -2,8 +2,9 @@ package com.saphienyako.quest_giver.quest.task;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+
 
 
 import java.util.Objects;
@@ -26,7 +27,7 @@ public abstract class RegistryTaskType<T, X> implements TaskType<ResourceKey<T>,
 
     @Override
     public ResourceKey<T> fromJson(JsonObject json) {
-        ResourceLocation rl = ResourceLocation.parse(json.get(this.key).getAsString());
+        Identifier rl = Identifier.parse(json.get(this.key).getAsString());
 
         Registry<T> registry = Objects.requireNonNull(this.registry());
 
@@ -40,7 +41,7 @@ public abstract class RegistryTaskType<T, X> implements TaskType<ResourceKey<T>,
     @Override
     public JsonObject toJson(ResourceKey<T> element) {
         JsonObject json = new JsonObject();
-        json.addProperty(this.key, element.location().toString());
+        json.addProperty(this.key, element.identifier().toString());
         return json;
     }
 }

@@ -28,6 +28,6 @@ public class AnimalTameTask extends RegistryTaskType<EntityType<?>, Entity> {
 
     @Override
     public boolean checkCompleted(ServerPlayer player, ResourceKey<EntityType<?>> element, Entity match) {
-        return element.location().equals(BuiltInRegistries.ENTITY_TYPE.getKey(match.getType()));
+        return element.identifier().equals(BuiltInRegistries.ENTITY_TYPE.getKey(match.getType()));
     }
 }

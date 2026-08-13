@@ -6,7 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.quest.util.SpecialTaskAction;
-import net.minecraft.resources.ResourceLocation;
+
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -23,8 +24,7 @@ import java.util.Set;
 
 public class SpecialTaskActionLoader extends SimplePreparableReloadListener<Set<String>> {
 
-    private static final ResourceLocation FILE =
-            ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "special_task_actions.json");
+    private static final Identifier FILE = Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, "special_task_actions.json");
 
     @Nonnull
     @Override

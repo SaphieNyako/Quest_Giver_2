@@ -7,12 +7,8 @@ import com.saphienyako.quest_giver.events.QuestCompletionEvent;
 import com.saphienyako.quest_giver.quest.*;
 import com.saphienyako.quest_giver.quest.task.TaskType;
 import com.saphienyako.quest_giver.quest.util.SelectableQuest;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -22,9 +18,9 @@ import java.util.*;
 public class QuestLineData {
 
     public final String questLineId;
-    private final List<ResourceLocation> pendingCompletion = new ArrayList<>();
-    private final Set<ResourceLocation> completedQuests = new HashSet<>();
-    private final Map<ResourceLocation, QuestProgress> activeQuests = new HashMap<>();
+    private final List<Identifier> pendingCompletion = new ArrayList<>();
+    private final Set<Identifier> completedQuests = new HashSet<>();
+    private final Map<Identifier, QuestProgress> activeQuests = new HashMap<>();
     @Nullable
     private ServerPlayer player;
     private boolean accepted = false;
@@ -90,7 +86,7 @@ public class QuestLineData {
     }
 
     @Nullable
-    public QuestDisplay getActiveQuestDisplay(ResourceLocation id) {
+    public QuestDisplay getActiveQuestDisplay(Identifier id) {
         QuestLine quests = this.getQuestLine();
         if (quests != null && this.player != null && this.activeQuests.containsKey(id)) {
             Quest quest = quests.getQuest(id);
@@ -128,7 +124,7 @@ public class QuestLineData {
         QuestLine quests = this.getQuestLine();
         if (quests != null && this.player != null && !this.pendingCompletion.isEmpty()) {
             while (!this.pendingCompletion.isEmpty()) {
-                ResourceLocation id = this.pendingCompletion.remove(0);
+                Identifier id = this.pendingCompletion.remove(0);
                 QuestDisplay display = this.tryComplete(this.player, quests, id);
                 if (display != null) {
                     return display;
@@ -139,7 +135,7 @@ public class QuestLineData {
     }
 
     @Nullable
-    private QuestDisplay tryComplete(ServerPlayer player, QuestLine quests, ResourceLocation id) {
+    private QuestDisplay tryComplete(ServerPlayer player, QuestLine quests, Identifier id) {
         Quest quest = quests.getQuest(id);
         if (quest != null) {
             QuestDisplay display = quest.tasks.isEmpty() ? quest.start : quest.complete;
@@ -219,9 +215,9 @@ public class QuestLineData {
         }
         if (this.player != null) {
             if (shouldNotify) {
-                this.player.displayClientMessage(Component.translatable("message.quest_giver.quest_completion"), true);
+                this.player.sendSystemMessage(Component.translatable("message.quest_giver.quest_completion"), true);
             } else {
-                this.player.displayClientMessage(Component.literal(msgToDisplay), true);
+                this.player.sendSystemMessage(Component.literal(msgToDisplay), true);
             }
         }
         this.startNextQuests();
@@ -324,13 +320,13 @@ public class QuestLineData {
 
     //Complete Quest Task Method
 
-    public boolean hasCompletedQuest(ResourceLocation questId) {
+    public boolean hasCompletedQuest(Identifier questId) {
         return completedQuests.contains(questId);
     }
 
     //Command Methods
 
-    public boolean forceCompleteQuest(ResourceLocation questId) {
+    public boolean forceCompleteQuest(Identifier questId) {
 
         QuestLine quests = getQuestLine();
 
@@ -354,7 +350,7 @@ public class QuestLineData {
 
         startNextQuests();
 
-        player.displayClientMessage(Component.literal("Force completed quest: " + questId), false);
+        player.sendSystemMessage(Component.literal("Force completed quest: " + questId), false);
 
         return true;
     }
@@ -365,9 +361,9 @@ public class QuestLineData {
             return false;
         }
 
-        List<ResourceLocation> skipped = new ArrayList<>(activeQuests.keySet());
+        List<Identifier> skipped = new ArrayList<>(activeQuests.keySet());
 
-        for (ResourceLocation questId : skipped) {
+        for (Identifier questId : skipped) {
             completedQuests.add(questId);
         }
 
@@ -419,7 +415,7 @@ public class QuestLineData {
         forcedEnd = true;
     }
 
-    public Set<ResourceLocation> getActiveQuestIds() {
+    public Set<Identifier> getActiveQuestIds() {
         return Collections.unmodifiableSet(activeQuests.keySet());
     }
 
@@ -428,11 +424,11 @@ public class QuestLineData {
 
                     Codec.STRING.fieldOf("questLineId").forGetter(d -> d.questLineId),
 
-                    ResourceLocation.CODEC.listOf().fieldOf("pending").forGetter(d -> d.pendingCompletion),
+                    Identifier.CODEC.listOf().fieldOf("pending").forGetter(d -> d.pendingCompletion),
 
-                    ResourceLocation.CODEC.listOf().fieldOf("completed").forGetter(d -> List.copyOf(d.completedQuests)),
+                    Identifier.CODEC.listOf().fieldOf("completed").forGetter(d -> List.copyOf(d.completedQuests)),
 
-                    Codec.unboundedMap(ResourceLocation.CODEC, QuestProgress.CODEC).fieldOf("active").forGetter(d -> d.activeQuests),
+                    Codec.unboundedMap(Identifier.CODEC, QuestProgress.CODEC).fieldOf("active").forGetter(d -> d.activeQuests),
 
                     Codec.BOOL.optionalFieldOf("forcedEnd", false).forGetter(d -> d.forcedEnd)
 

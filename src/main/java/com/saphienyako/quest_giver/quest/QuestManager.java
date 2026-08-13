@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.data.QuestGiverDataLoader;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -41,11 +41,11 @@ public class QuestManager {
 
                 try {
 
-                    Map<ResourceLocation, Resource> resources = rm.listResources("quest_lines", rl -> rl.getPath().endsWith(".json"));
+                    Map<Identifier, Resource> resources = rm.listResources("quest_lines", rl -> rl.getPath().endsWith(".json"));
 
                     Set<String> discoveredLines = new HashSet<>();
 
-                    for (ResourceLocation rl : resources.keySet()) {
+                    for (Identifier rl : resources.keySet()) {
 
                         String path = rl.getPath();
                         String[] split = path.split("/");
@@ -57,13 +57,13 @@ public class QuestManager {
 
                     for (String lineId : discoveredLines) {
 
-                        Map<ResourceLocation, Quest> loaded = new HashMap<>();
+                        Map<Identifier, Quest> loaded = new HashMap<>();
                         QuestEnd end = null;
                         String folder = "quest_lines/" + lineId + "/";
 
-                        for (Map.Entry<ResourceLocation, Resource> entry : resources.entrySet()) {
+                        for (Map.Entry<Identifier, Resource> entry : resources.entrySet()) {
 
-                            ResourceLocation fileId = entry.getKey();
+                            Identifier fileId = entry.getKey();
 
                             if (!fileId.getPath().startsWith(folder)) {
                                 continue;
@@ -87,7 +87,7 @@ public class QuestManager {
                                 }
 
                                 String questName = fileName.substring(0, fileName.length() - ".json".length());
-                                ResourceLocation questId = ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, questName);
+                                Identifier questId = Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, questName);
                                 Quest quest = Quest.fromJson(questId, json);
                                 loaded.put(questId, quest);
                             }

@@ -8,7 +8,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
 
@@ -50,7 +49,7 @@ public class QuestDisplay {
     }
 
     public static QuestDisplay fromNetwork(FriendlyByteBuf buffer) {
-        return buffer.readJsonWithCodec(CODEC);
+        return buffer.readLenientJsonWithCodec(CODEC);
     }
 
     public void toNetwork(FriendlyByteBuf buffer) {

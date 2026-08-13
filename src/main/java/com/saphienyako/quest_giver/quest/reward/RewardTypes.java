@@ -2,13 +2,14 @@ package com.saphienyako.quest_giver.quest.reward;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+
 
 public class RewardTypes {
 
-    private static final BiMap<ResourceLocation, RewardType<?>> values = HashBiMap.create();
+    private static final BiMap<Identifier, RewardType<?>> values = HashBiMap.create();
 
-    public static RewardType<?> getType(ResourceLocation id) {
+    public static RewardType<?> getType(Identifier id) {
         if (values.containsKey(id)) {
             return values.get(id);
         } else {
@@ -16,7 +17,7 @@ public class RewardTypes {
         }
     }
 
-    public static ResourceLocation getId(RewardType<?> type) {
+    public static Identifier getId(RewardType<?> type) {
         if (values.containsValue(type)) {
             return values.inverse().get(type);
         } else {
@@ -24,7 +25,7 @@ public class RewardTypes {
         }
     }
 
-    public static void register(ResourceLocation id, RewardType<?> type) {
+    public static void register(Identifier id, RewardType<?> type) {
         if (values.containsKey(id)) {
             throw new IllegalStateException("Task type with the same entityId already registered: " + id);
         } else if (values.containsValue(type)) {

@@ -6,25 +6,17 @@ import com.saphienyako.quest_giver.quest.QuestLinkManager;
 import com.saphienyako.quest_giver.quest.data.QuestData;
 import com.saphienyako.quest_giver.quest.data.QuestLinkData;
 import com.saphienyako.quest_giver.quest.task.*;
-import com.saphienyako.quest_giver.screen.DisplayQuestScreen;
-import com.saphienyako.quest_giver.screen.SelectQuestScreen;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.levelgen.structure.Structure;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -33,15 +25,6 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 
 public class EventListener {
-    
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-
-    public void showGui( RenderGuiLayerEvent.Pre event) {
-        if (Minecraft.getInstance().screen instanceof DisplayQuestScreen || Minecraft.getInstance().screen instanceof SelectQuestScreen) {
-            event.setCanceled(true);
-        }
-    }
 
     @SubscribeEvent
     public void craftItem(PlayerEvent.ItemCraftedEvent event) {
@@ -75,33 +58,35 @@ public class EventListener {
     @SubscribeEvent
     public void playerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        if (player.tickCount % 20 == 0 && !player.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
 
-            QuestData quests = QuestData.get(serverPlayer);
+        if (player.tickCount % 20 != 0 || player.level().isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
 
-            serverPlayer.getInventory().items.forEach(stack ->
-                    quests.checkComplete(ItemStackTask.INSTANCE, stack));
+        QuestData quests = QuestData.get(serverPlayer);
 
-            serverPlayer.level().getBiome(serverPlayer.blockPosition())
-                    .is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.location()));
+        // ITEM STACK TASK
+        for (int i = 0; i < serverPlayer.getInventory().getContainerSize(); i++) {
+            ItemStack stack = serverPlayer.getInventory().getItem(i);
+            quests.checkComplete(ItemStackTask.INSTANCE, stack);
+        }
 
-            if (serverPlayer.serverLevel().structureManager().hasAnyStructureAt(serverPlayer.blockPosition())) {
+        // BIOME TASK
+        serverPlayer.level().getBiome(serverPlayer.blockPosition()).is(biome -> quests.checkComplete(BiomeTask.INSTANCE, biome.identifier()));
 
-                RegistryAccess access = serverPlayer.level().registryAccess();
-                Registry<Structure> structureRegistry = access.registryOrThrow(Registries.STRUCTURE);
+        // STRUCTURE TASK
+        if (serverPlayer.level().structureManager().hasAnyStructureAt(serverPlayer.blockPosition())) {
 
-                serverPlayer.serverLevel()
-                        .structureManager()
-                        .getAllStructuresAt(serverPlayer.blockPosition())
-                        .forEach((structure, set) -> {
+            RegistryAccess access = serverPlayer.level().registryAccess();
 
-                            ResourceLocation structureId = structureRegistry.getKey(structure);
+            var structureRegistry = access.lookupOrThrow(Registries.STRUCTURE);
 
-                            if (structureId != null) {
-                                quests.checkComplete(StructureTask.INSTANCE, structureId);
-                            }
-                        });
-            }
+            serverPlayer.level()
+                    .structureManager()
+                    .getAllStructuresAt(serverPlayer.blockPosition())
+                    .forEach((structure, set) -> {
+                        //TODO We'll adapt this line to the new HolderLookup API?
+                    });
         }
     }
 
@@ -115,7 +100,7 @@ public class EventListener {
         Entity target = event.getTarget();
 
         // GLOBAL GIFT CHECK FIRST
-        if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
 
             ItemStack stack = player.getItemInHand(event.getHand());
 
@@ -138,13 +123,13 @@ public class EventListener {
 
         ItemStack stack = event.getEntity().getItemInHand(event.getHand());
 
-        ResourceLocation heldItemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier heldItemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
 
         if (!link.interactionItem.equals(heldItemId)) {
             return;
         }
 
-        if (event.getLevel().isClientSide) {
+        if (event.getLevel().isClientSide()) {
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
             return;
@@ -184,7 +169,7 @@ public class EventListener {
     @SubscribeEvent
     public void entityInteract(PlayerInteractEvent.EntityInteract event) {
 
-        if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
 
             if (event.getHand() != InteractionHand.MAIN_HAND) {
                 return;

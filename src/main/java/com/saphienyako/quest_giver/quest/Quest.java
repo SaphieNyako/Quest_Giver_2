@@ -6,9 +6,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.serialization.Codec;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 
@@ -19,9 +19,9 @@ import java.util.Set;
 
 public class Quest {
 
-    public final ResourceLocation id;
+    public final Identifier id;
     // One of them is required
-    public final Set<ResourceLocation> parents;
+    public final Set<Identifier> parents;
 
     public final boolean repeatable;
 
@@ -33,7 +33,7 @@ public class Quest {
     public final List<QuestTask> tasks;
     public final List<QuestReward> rewards;
 
-    public Quest(ResourceLocation id, Set<ResourceLocation> parents, boolean repeatable, Item icon, QuestDisplay start, @Nullable QuestDisplay complete, List<QuestTask> tasks, List<QuestReward> rewards) {
+    public Quest(Identifier id, Set<Identifier> parents, boolean repeatable, Item icon, QuestDisplay start, @Nullable QuestDisplay complete, List<QuestTask> tasks, List<QuestReward> rewards) {
         this.id = id;
         this.parents = ImmutableSet.copyOf(parents);
         this.repeatable = repeatable;
@@ -90,21 +90,25 @@ public class Quest {
         return json;
     }
 
-    public static Quest fromJson(ResourceLocation id, JsonElement data) {
+    public static Quest fromJson(Identifier id, JsonElement data) {
         JsonObject json = data.getAsJsonObject();
-        ImmutableSet.Builder<ResourceLocation> parents = ImmutableSet.builder();
+        ImmutableSet.Builder<Identifier> parents = ImmutableSet.builder();
         if (json.has("parent") && json.get("parent").isJsonArray()) {
             for (JsonElement elem : json.get("parent").getAsJsonArray()) {
-                parents.add(ResourceLocation.parse(elem.getAsString()));
+                parents.add(Identifier.parse(elem.getAsString()));
             }
         } else if (json.has("parent")) {
-            parents.add(ResourceLocation.parse(json.get("parent").getAsString()));
+            parents.add(Identifier.parse(json.get("parent").getAsString()));
         }
         boolean repeatable = json.has("repeatable") && json.get("repeatable").getAsBoolean();
 
 
-        ResourceLocation itemId = ResourceLocation.parse(json.get("icon").getAsString());
-        Item icon = BuiltInRegistries.ITEM.get(itemId);
+        Identifier itemId = Identifier.parse(json.get("icon").getAsString());
+        Item icon = BuiltInRegistries.ITEM
+                .get(itemId)
+                .map(Holder::value)
+                .orElseThrow(() ->
+                        new JsonParseException("Invalid item icon: " + itemId + " for quest " + id));
 
         if (icon == null) {
             throw new JsonParseException("Invalid item icon: " + itemId + " for quest " + id);

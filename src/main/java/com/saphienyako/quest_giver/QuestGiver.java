@@ -13,21 +13,20 @@ import com.saphienyako.quest_giver.quest.reward.CommandReward;
 import com.saphienyako.quest_giver.quest.reward.ItemReward;
 import com.saphienyako.quest_giver.quest.reward.RewardTypes;
 import com.saphienyako.quest_giver.quest.task.*;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.level.levelgen.Heightmap;
-
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -45,73 +44,67 @@ public class QuestGiver
     public QuestGiver(IEventBus modEventBus, ModContainer modContainer) {
 
         modEventBus.addListener(this::entityAttributes);
-        NeoForge.EVENT_BUS.register(this);
-        modEventBus.addListener(this::addCreative);
-        ModEntities.register(modEventBus);
-        modEventBus.addListener(QuestGiverNetwork::register);
-        ModItems.register(modEventBus);
 
-        //Datapack for Quests
+        ModEntities.register(modEventBus);
+        ModItems.register(modEventBus);
+        ModAttachments.register(modEventBus);
+
+        modEventBus.addListener(QuestGiverNetwork::register);
+
         NeoForge.EVENT_BUS.addListener(this::reloadData);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
-        //Player Capabilities
-        ModAttachments.register(modEventBus);
+
 
         NeoForge.EVENT_BUS.register(new EventListener());
 
-        // Quest task & reward types. Not in setup as they are required for datagen.
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"craft"), CraftTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"gift"), GiftTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"item_stack"), ItemStackTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"kill"), KillTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"pet"), AnimalPetTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"tame"), AnimalTameTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"biome"), BiomeTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"structure"), StructureTask.INSTANCE);
-        //  TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "complete_quest"), CompleteQuestTask.INSTANCE);
-        TaskTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID,"special_task"), SpecialTask.INSTANCE);
+        // Quest task & reward types
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"craft"), CraftTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"gift"), GiftTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"item_stack"), ItemStackTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"kill"), KillTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"pet"), AnimalPetTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"tame"), AnimalTameTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"biome"), BiomeTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"structure"), StructureTask.INSTANCE);
+        //  TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID, "complete_quest"), CompleteQuestTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"special_task"), SpecialTask.INSTANCE);
 
-        RewardTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "item"), ItemReward.INSTANCE);
-        RewardTypes.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "command"), CommandReward.INSTANCE);
+        RewardTypes.register(Identifier.fromNamespaceAndPath(MOD_ID, "item"), ItemReward.INSTANCE);
+        RewardTypes.register(Identifier.fromNamespaceAndPath(MOD_ID, "command"), CommandReward.INSTANCE);
 
-
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        //Added ModCreativeModeTab for the mod itself
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
 
     }
 
     private void entityAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.QUEST_VILLAGER.get(), QuestVillagerEntity.createAttributes().build());
+        event.put(ModEntities.QUEST_VILLAGER.get(), Villager.createAttributes().build());
     }
 
-    public void reloadData(AddReloadListenerEvent event) {
-        event.addListener(new QuestLineNameLoader());
-        event.addListener(new SpecialTaskActionLoader());
-        event.addListener(QuestManager.createReloadListener());
-        event.addListener(new QuestLinkDataLoader());
+    public void reloadData(AddServerReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath(MOD_ID, "quest_line_names"), new QuestLineNameLoader());
+        event.addListener(Identifier.fromNamespaceAndPath(MOD_ID, "special_task_actions"), new SpecialTaskActionLoader());
+        event.addListener(Identifier.fromNamespaceAndPath(MOD_ID, "quests"), QuestManager.createReloadListener());
+        event.addListener(Identifier.fromNamespaceAndPath(MOD_ID, "quest_links"), new QuestLinkDataLoader());
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
         QuestCommands.register(event.getDispatcher());
     }
 
-    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event) {
-            EntityRenderers.register(ModEntities.QUEST_VILLAGER.get(), VillagerRenderer::new);
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ModEntities.QUEST_VILLAGER.get(), VillagerRenderer::new);
         }
+    }
+
+    @EventBusSubscriber(modid = MOD_ID)
+    public static class ModEvents {
 
         @SubscribeEvent
-        private static void spawnPlacement(RegisterSpawnPlacementsEvent event) {
-            event.register(ModEntities.QUEST_VILLAGER.get(),  SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, QuestVillagerEntity::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        public static void spawnPlacement(RegisterSpawnPlacementsEvent event) {
+            event.register(ModEntities.QUEST_VILLAGER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, QuestVillagerEntity::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
     }
 }

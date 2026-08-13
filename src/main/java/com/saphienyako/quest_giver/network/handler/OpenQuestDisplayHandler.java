@@ -7,18 +7,25 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class OpenQuestDisplayHandler {
 
-    public static void openMenu(OpenQuestDisplayMessage msg) {
+    public static void handle(OpenQuestDisplayMessage msg, IPayloadContext context) {
         if (msg.display().sound != null) {
             Player player = Minecraft.getInstance().player;
-            if (player != null && msg.display().sound != null) {
-                Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(msg.display().sound, SoundSource.MASTER, 1, 1, player.getRandom(), player.getX(), player.getY(), player.getZ()));
+
+            if (player != null) {
+                Minecraft.getInstance()
+                        .getSoundManager()
+                        .play(new SimpleSoundInstance(msg.display().sound, SoundSource.MASTER, 1, 1, player.getRandom(), player.getX(), player.getY(), player.getZ()));
             }
         }
-        if (msg.entityId() != -1) ClientQuests.lastTalkedEntityId = msg.entityId();
-        Minecraft.getInstance().setScreen(new DisplayQuestScreen(msg.display(), msg.confirmationButtons(), ClientQuests.lastTalkedEntityId, msg.questLineId(), msg.backgroundName(), msg.dismiss(), msg.scale()));
 
+        if (msg.entityId() != -1) {
+            ClientQuests.lastTalkedEntityId = msg.entityId();
+        }
+
+        Minecraft.getInstance().setScreen(new DisplayQuestScreen(msg.display(), msg.confirmationButtons(), ClientQuests.lastTalkedEntityId, msg.questLineId(), msg.backgroundName(), msg.dismiss(), msg.scale()));
     }
 }

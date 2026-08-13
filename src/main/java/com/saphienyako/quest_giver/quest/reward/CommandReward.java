@@ -3,6 +3,7 @@ package com.saphienyako.quest_giver.quest.reward;
 import com.google.gson.JsonObject;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 public class CommandReward implements RewardType<String> {
@@ -20,11 +21,15 @@ public class CommandReward implements RewardType<String> {
 
     @Override
     public void grantReward(ServerPlayer player, String element) {
-        if (player.getServer() == null) return;
-        Commands commands = player.getServer().getCommands();
-        // Find the player that completed the quest with @s
-        CommandSourceStack source = player.getServer().createCommandSourceStack().withEntity(player);
-        commands.performPrefixedCommand(source, element);
+        MinecraftServer server = player.level().getServer();
+
+        if (server == null) {
+            return;
+        }
+
+        CommandSourceStack source = player.createCommandSourceStack();
+
+        server.getCommands().performPrefixedCommand(source, element);
     }
 
     @Override

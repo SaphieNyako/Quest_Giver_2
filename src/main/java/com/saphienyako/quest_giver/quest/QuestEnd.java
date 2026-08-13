@@ -4,8 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.core.Holder;
 
 public class QuestEnd {
 
@@ -20,13 +21,12 @@ public class QuestEnd {
     public static QuestEnd fromJson(JsonElement data) {
         JsonObject json = data.getAsJsonObject();
 
-        ResourceLocation itemId = ResourceLocation.parse(json.get("icon").getAsString());
+        Identifier itemId = Identifier.parse(json.get("icon").getAsString());
 
-        Item icon = BuiltInRegistries.ITEM.get(itemId);
-
-        if (icon == null) {
-            throw new JsonParseException("Invalid end icon: " + itemId);
-        }
+        Item icon = BuiltInRegistries.ITEM
+                .get(itemId)
+                .map(Holder::value)
+                .orElseThrow(() -> new JsonParseException("Invalid end icon: " + itemId));
 
         QuestDisplay display = QuestDisplay.fromJson(json.get("start").getAsJsonObject());
 

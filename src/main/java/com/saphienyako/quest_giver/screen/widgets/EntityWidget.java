@@ -1,6 +1,6 @@
 package com.saphienyako.quest_giver.screen.widgets;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -23,8 +23,9 @@ public class EntityWidget extends AbstractWidget {
         this.scale = scale;
     }
 
+
     @Override
-    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         double scale = ((double) this.height / this.entity.getType().getHeight() * this.scale);
 
         int x1 = this.getX();
@@ -34,7 +35,7 @@ public class EntityWidget extends AbstractWidget {
 
         float yOffset = 0f;
 
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 x1, y1,
                 x2, y2,

@@ -16,7 +16,7 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<QuestData>> QUESTS =
             ATTACHMENTS.register("quests", () ->
                     AttachmentType.builder(QuestData::new)
-                            .serialize(QuestData.CODEC) //TODO create codec?
+                            .serialize(QuestData.CODEC.fieldOf("quest_data")) //TODO create codec?
                             .copyOnDeath()
                             .build()
             );

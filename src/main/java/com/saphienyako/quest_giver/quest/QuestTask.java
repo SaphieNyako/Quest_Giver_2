@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import com.saphienyako.quest_giver.quest.task.RegistryTaskType;
 import com.saphienyako.quest_giver.quest.task.TaskType;
 import com.saphienyako.quest_giver.quest.task.TaskTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 
@@ -81,7 +81,7 @@ public class QuestTask {
 
     public static QuestTask fromJson(JsonObject json) {
         //noinspection unchecked
-        TaskType<Object, Object> task = (TaskType<Object, Object>) TaskTypes.getType(ResourceLocation.tryParse(json.get("id").getAsString()));
+        TaskType<Object, Object> task = (TaskType<Object, Object>) TaskTypes.getType(Identifier.tryParse(json.get("id").getAsString()));
         Object element = task.fromJson(json);
         int times = json.has("times") ? json.get("times").getAsInt() : 1;
         return new QuestTask(task, element, times);

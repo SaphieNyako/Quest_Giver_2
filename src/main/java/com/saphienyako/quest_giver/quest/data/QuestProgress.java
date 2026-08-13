@@ -7,7 +7,7 @@ import com.saphienyako.quest_giver.quest.QuestLine;
 import com.saphienyako.quest_giver.quest.QuestTask;
 import com.saphienyako.quest_giver.quest.task.CompleteQuestTask;
 import com.saphienyako.quest_giver.quest.task.TaskType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
@@ -18,10 +18,10 @@ import java.util.stream.Stream;
 
 public class QuestProgress {
 
-    public final ResourceLocation quest;
+    public final Identifier quest;
     private final Map<Integer, Integer> taskProgress = new HashMap<>();
 
-    public QuestProgress(ResourceLocation quest) {
+    public QuestProgress(Identifier quest) {
         this.quest = quest;
     }
 
@@ -109,7 +109,7 @@ public class QuestProgress {
 
     public static final Codec<QuestProgress> CODEC =
             RecordCodecBuilder.create(instance -> instance.group(
-                    ResourceLocation.CODEC.fieldOf("quest").forGetter(p -> p.quest),
+                    Identifier.CODEC.fieldOf("quest").forGetter(p -> p.quest),
                     Codec.unboundedMap(Codec.INT, Codec.INT)
                             .fieldOf("progress")
                             .forGetter(p -> p.taskProgress)

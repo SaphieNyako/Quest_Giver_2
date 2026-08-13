@@ -2,7 +2,6 @@ package com.saphienyako.quest_giver.screen;
 
 import com.saphienyako.quest_giver.network.ConfirmQuestMessage;
 import com.saphienyako.quest_giver.network.DismissEntityMessage;
-import com.saphienyako.quest_giver.network.QuestGiverNetwork;
 import com.saphienyako.quest_giver.quest.QuestDisplay;
 import com.saphienyako.quest_giver.screen.util.AnimatedText;
 import com.saphienyako.quest_giver.screen.util.TextProcessor;
@@ -10,14 +9,12 @@ import com.saphienyako.quest_giver.screen.widgets.BackgroundWidget;
 import com.saphienyako.quest_giver.screen.widgets.EntityWidget;
 import com.saphienyako.quest_giver.screen.widgets.FancyButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.network.PacketDistributor;
-
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class DisplayQuestScreen extends Screen {
 
@@ -78,11 +75,11 @@ public class DisplayQuestScreen extends Screen {
 
         if (this.hasConfirmationButtons) {
             this.addRenderableWidget(FancyButton.makeLarge(this.backgroundName,this.left + EntityWidget.WIDTH + 80, this.top + 123, Component.translatable("message.quest_giver.quest_accept"), button -> {
-                PacketDistributor.sendToServer(new ConfirmQuestMessage(this.questLineId,  true));
+                ClientPacketDistributor.sendToServer(new ConfirmQuestMessage(this.questLineId,  true));
                 this.onClose();
             }));
             this.addRenderableWidget(FancyButton.makeLarge(this.backgroundName,this.left + EntityWidget.WIDTH + 180, this.top + 123, Component.translatable("message.quest_giver.quest_decline"), button -> {
-                PacketDistributor.sendToServer(new ConfirmQuestMessage(this.questLineId,false));
+                ClientPacketDistributor.sendToServer(new ConfirmQuestMessage(this.questLineId,false));
                 this.onClose();
             }));
         }
@@ -91,25 +88,31 @@ public class DisplayQuestScreen extends Screen {
     @Override
     public void onClose() {
         if(this.dismiss) {
-            PacketDistributor.sendToServer(new DismissEntityMessage(this.entityId));
+            ClientPacketDistributor.sendToServer(new DismissEntityMessage(this.entityId));
         }
         super.onClose();
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.pose().pushPose();
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-        graphics.pose().translate(0, 0, 20);
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        graphics.pose().translate(0, 0, 20);
-        this.drawTextLines(graphics, mouseX, mouseY);
-        graphics.pose().popPose();
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+      //  graphics.pose().pushPose();
+      //  this.renderBackground(graphics, mouseX, mouseY, partialTicks);
+        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
+
+
+     //   graphics.pose().translate(0, 0, 20);
+     //   super.render(graphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+
+      //  graphics.pose().translate(0, 0, 20);
+     //   this.drawTextLines(graphics, mouseX, mouseY);
+     //   graphics.pose().popPose();
+        this.drawTextLines(graphics);
     }
 
-    private void drawTextLines(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void drawTextLines(GuiGraphicsExtractor graphics) {
         if (this.minecraft != null) {
-            graphics.drawString(this.minecraft.font, this.title, (this.width / 2) - (this.minecraft.font.width(this.title) / 2) + 20, this.top - this.minecraft.font.lineHeight + 10, 0xFFFFFF, false);
+            graphics.text(this.minecraft.font, this.title, (this.width / 2) - (this.minecraft.font.width(this.title) / 2) + 20, this.top - this.minecraft.font.lineHeight + 10, 0xFFFFFF, false);
             this.text.render(graphics, this.left + EntityWidget.WIDTH + BackgroundWidget.HORIZONTAL_PADDING, this.top + BackgroundWidget.VERTICAL_PADDING);
         }
     }

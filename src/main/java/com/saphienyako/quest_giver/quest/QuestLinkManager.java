@@ -7,7 +7,7 @@ import com.saphienyako.quest_giver.QuestGiver;
 import com.saphienyako.quest_giver.data.QuestLinkDataLoader;
 import com.saphienyako.quest_giver.quest.data.QuestLinkData;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +33,7 @@ public class QuestLinkManager {
     /** Returns the first matching link for an entity (type + optional name) */
     @Nullable
     public static QuestLinkData getMatchingLink(Entity entity) {
-        ResourceLocation entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         if (entityId == null) return null;
 
         for (QuestLinkData link : LINKS) {

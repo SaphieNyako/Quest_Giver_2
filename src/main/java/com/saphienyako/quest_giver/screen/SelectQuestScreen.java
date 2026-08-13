@@ -6,14 +6,13 @@ import com.saphienyako.quest_giver.quest.util.SelectableQuest;
 import com.saphienyako.quest_giver.screen.widgets.EntityWidget;
 import com.saphienyako.quest_giver.screen.widgets.SelectQuestWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public class SelectQuestScreen extends Screen {
@@ -58,26 +57,33 @@ public class SelectQuestScreen extends Screen {
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.pose().pushPose();
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-        graphics.pose().translate(0, 0, 20);
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        graphics.pose().translate(0, 0, 20);
-        this.drawTextLines(graphics, mouseX, mouseY);
-        graphics.pose().popPose();
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+       // graphics.pose().pushPose();
+       // this.renderBackground(graphics, mouseX, mouseY, partialTicks);
+        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
+
+       // graphics.pose().translate(0, 0, 20);
+       // super.render(graphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+
+       // graphics.pose().translate(0, 0, 20);
+       // this.drawTextLines(graphics, mouseX, mouseY);
+       // graphics.pose().popPose();
+        this.drawTextLines(graphics);
     }
 
-    private void drawTextLines(GuiGraphics graphics, int mouseX, int mouseY) {
+
+
+    private void drawTextLines(GuiGraphicsExtractor graphics) {
         if (this.minecraft != null) {
-            graphics.drawString(this.minecraft.font, this.title, (this.width / 2 - (this.minecraft.font.width(this.title) / 2)) + 20, this.top - 2 - this.minecraft.font.lineHeight, 0xFFFFFF, false);
+            graphics.text(this.minecraft.font, this.title, (this.width / 2 - (this.minecraft.font.width(this.title) / 2)) + 20, this.top - 2 - this.minecraft.font.lineHeight, 0xFFFFFF, false);
         }
     }
 
     @Override
     public void onClose() {
         if(this.dismiss) {
-            PacketDistributor.sendToServer(new DismissEntityMessage(this.entityId));
+            ClientPacketDistributor.sendToServer(new DismissEntityMessage(this.entityId));
         }
         super.onClose();
     }

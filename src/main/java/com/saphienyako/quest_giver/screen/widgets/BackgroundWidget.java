@@ -1,11 +1,13 @@
 package com.saphienyako.quest_giver.screen.widgets;
 
 import com.saphienyako.quest_giver.QuestGiver;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -25,9 +27,14 @@ public class BackgroundWidget extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blit(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_01.png"), this.getX(), this.getY(), 0, 0, 240, HEIGHT);
-        graphics.blit(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_02.png"), this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_01.png"),
+                this.getX(), this.getY(), 0, 0, 240, HEIGHT, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_02.png"),
+                this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT, 256, 256);
+
+     //   graphics.blit(Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_01.png"), this.getX(), this.getY(), 0, 0, 240, HEIGHT);
+     //   graphics.blit(Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_02.png"), this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
     }
 
     @Override

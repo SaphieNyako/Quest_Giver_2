@@ -8,41 +8,35 @@ public class QuestGiverNetwork {
 
     public static final String PROTOCOL_VERSION = "1";
 
-    public static PayloadRegistrar REGISTRAR;
-
     public static void register(RegisterPayloadHandlersEvent event) {
-        REGISTRAR = event.registrar(QuestGiver.MOD_ID)
+        PayloadRegistrar registrar = event.registrar(QuestGiver.MOD_ID)
                 .versioned(PROTOCOL_VERSION);
 
-
-        // Client
-        REGISTRAR.playToClient(
+        // Clientbound
+        registrar.playToClient(
                 OpenQuestDisplayMessage.TYPE,
-                OpenQuestDisplayMessage.STREAM_CODEC,
-                OpenQuestDisplayMessage::handle
+                OpenQuestDisplayMessage.STREAM_CODEC
         );
 
-        REGISTRAR.playToClient(
+        registrar.playToClient(
                 OpenQuestSelectionMessage.TYPE,
-                OpenQuestSelectionMessage.STREAM_CODEC,
-                OpenQuestSelectionMessage::handle
+                OpenQuestSelectionMessage.STREAM_CODEC
         );
 
-        //SERVER
-        // Server
-        REGISTRAR.playToServer(
+        // Serverbound
+        registrar.playToServer(
                 ConfirmQuestMessage.TYPE,
                 ConfirmQuestMessage.STREAM_CODEC,
                 ConfirmQuestMessage::handle
         );
 
-        REGISTRAR.playToServer(
+        registrar.playToServer(
                 SelectQuestMessage.TYPE,
                 SelectQuestMessage.STREAM_CODEC,
                 SelectQuestMessage::handle
         );
 
-        REGISTRAR.playToServer(
+        registrar.playToServer(
                 DismissEntityMessage.TYPE,
                 DismissEntityMessage.STREAM_CODEC,
                 DismissEntityMessage::handle

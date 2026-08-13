@@ -10,9 +10,10 @@ import com.saphienyako.quest_giver.quest.data.QuestLineData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Map;
@@ -22,7 +23,7 @@ public class QuestCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 
-        dispatcher.register(Commands.literal("quest_giver").requires(source -> source.hasPermission(2))
+        dispatcher.register(Commands.literal("quest_giver") .requires(Commands.hasPermission(Commands.LEVEL_MODERATORS))
                 .then(Commands.literal("complete")
                         .then(Commands.argument("player", EntityArgument.player())
                                 .then(Commands.argument("quest_line", StringArgumentType.word())
@@ -70,7 +71,7 @@ public class QuestCommands {
         String questLineId = StringArgumentType.getString(context, "quest_line");
         String questInput = StringArgumentType.getString(context, "quest");
 
-        ResourceLocation questId = questInput.contains(":") ? ResourceLocation.parse(questInput) : ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, questInput);
+        Identifier questId = questInput.contains(":") ? Identifier.parse(questInput) : Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, questInput);
 
         QuestLineData line = QuestData.get(player).getQuestLine(questLineId);
 
@@ -188,7 +189,7 @@ public class QuestCommands {
             String questLineId = entry.getKey();
             QuestLineData line = entry.getValue();
 
-            Set<ResourceLocation> activeQuests = line.getActiveQuestIds();
+            Set<Identifier> activeQuests = line.getActiveQuestIds();
 
             if (activeQuests.isEmpty()) {
                 continue;
@@ -197,7 +198,7 @@ public class QuestCommands {
             activeCount += activeQuests.size();
             context.getSource().sendSuccess(() -> Component.literal("Quest Line: " + questLineId), false);
 
-            for (ResourceLocation questId : activeQuests) {
+            for (Identifier questId : activeQuests) {
                 context.getSource().sendSuccess(() -> Component.literal("   - Quest: " + questId.getPath()), false);
             }
         }

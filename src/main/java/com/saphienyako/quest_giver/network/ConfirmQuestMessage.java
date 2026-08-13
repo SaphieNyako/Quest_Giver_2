@@ -6,7 +6,7 @@ import com.saphienyako.quest_giver.quest.data.QuestData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 public record ConfirmQuestMessage(String questLineId, boolean accept) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<ConfirmQuestMessage> TYPE =
-            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(QuestGiver.MOD_ID, "confirm_quest"));
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, "confirm_quest"));
 
     public static final StreamCodec<FriendlyByteBuf, ConfirmQuestMessage> STREAM_CODEC =
             StreamCodec.of(ConfirmQuestMessage::encode, ConfirmQuestMessage::decode);
@@ -34,14 +34,17 @@ public record ConfirmQuestMessage(String questLineId, boolean accept) implements
     public static void handle(ConfirmQuestMessage msg, IPayloadContext context) {
         context.enqueueWork(() -> {
             Player player = context.player();
-            if (player.level().isClientSide) return;
-            if (player != null) {
-                QuestData data = QuestData.get((ServerPlayer) player);
-                if (msg.accept()) {
-                    data.acceptQuestLine(msg.questLineId());
-                } else {
-                    data.denyQuestLine(msg.questLineId());
-                }
+
+            if (!(player instanceof ServerPlayer serverPlayer)) {
+                return;
+            }
+
+            QuestData data = QuestData.get(serverPlayer);
+
+            if (msg.accept()) {
+                data.acceptQuestLine(msg.questLineId());
+            } else {
+                data.denyQuestLine(msg.questLineId());
             }
         });
     }

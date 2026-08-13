@@ -2,7 +2,8 @@ package com.saphienyako.quest_giver.quest;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -18,10 +19,10 @@ public class QuestLine {
     @Nullable
     private final QuestEnd end;
 
-    private final Map<ResourceLocation, Quest> quests;
+    private final Map<Identifier, Quest> quests;
     private final Map<Quest, List<Quest>> questOrder;
 
-    public QuestLine(Map<ResourceLocation, Quest> quests, @Nullable QuestEnd end) {
+    public QuestLine(Map<Identifier, Quest> quests, @Nullable QuestEnd end) {
         this.quests = ImmutableMap.copyOf(quests);
         ImmutableMap.Builder<Quest, List<Quest>> questOrder = ImmutableMap.builder();
         this.end = end;
@@ -44,7 +45,7 @@ public class QuestLine {
     }
 
     @Nullable
-    public Quest getQuest(ResourceLocation id) {
+    public Quest getQuest(Identifier id) {
         return this.quests.getOrDefault(id, null);
     }
 
@@ -56,7 +57,7 @@ public class QuestLine {
                 .orElse(null);
     }
 
-    public Set<Quest> getNextQuests(Set<ResourceLocation> active, Set<ResourceLocation> completed) {
+    public Set<Quest> getNextQuests(Set<Identifier> active, Set<Identifier> completed) {
         return this.questOrder.entrySet().stream()
                 .filter(entry -> !active.contains(entry.getKey().id)) // Filter out quests that are currently active
                 .filter(entry -> entry.getKey().repeatable || !completed.contains(entry.getKey().id)) // Only repeatable or not yet completed quests

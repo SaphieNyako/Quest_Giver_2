@@ -3,7 +3,7 @@ package com.saphienyako.quest_giver.quest;
 import com.google.gson.JsonObject;
 import com.saphienyako.quest_giver.quest.reward.RewardType;
 import com.saphienyako.quest_giver.quest.reward.RewardTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public class QuestReward {
@@ -36,7 +36,7 @@ public class QuestReward {
 
     public static QuestReward fromJson(JsonObject json) {
         //noinspection unchecked
-        RewardType<Object> reward = (RewardType<Object>) RewardTypes.getType(ResourceLocation.tryParse(json.get("id").getAsString()));
+        RewardType<Object> reward = (RewardType<Object>) RewardTypes.getType(Identifier.tryParse(json.get("id").getAsString()));
         Object element = reward.fromJson(json);
         return new QuestReward(reward, element);
     }

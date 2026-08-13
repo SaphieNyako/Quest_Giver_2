@@ -4,9 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class GiftTask implements TaskType<GiftTask.GiftRequirement, GiftTask.GiftContext> {
 
@@ -21,7 +23,7 @@ public class GiftTask implements TaskType<GiftTask.GiftRequirement, GiftTask.Gif
 
     private GiftTask() {}
 
-    public record GiftRequirement(Ingredient ingredient, @Nullable ResourceLocation entity, @Nullable String name) {}
+    public record GiftRequirement(Ingredient ingredient, @Nullable Identifier entity, @Nullable String name) {}
 
     public record GiftContext(ItemStack stack, Entity target) {}
 
@@ -44,7 +46,7 @@ public class GiftTask implements TaskType<GiftTask.GiftRequirement, GiftTask.Gif
         Entity target = match.target();
 
         if (element.entity() != null) {
-            ResourceLocation targetId = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
+            Identifier targetId = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
 
             if (!element.entity().equals(targetId)) {
                 return false;
@@ -69,10 +71,10 @@ public class GiftTask implements TaskType<GiftTask.GiftRequirement, GiftTask.Gif
                 .parse(JsonOps.INSTANCE, json.get("item"))
                 .getOrThrow(JsonSyntaxException::new);
 
-        ResourceLocation entity = null;
+        Identifier entity = null;
 
         if (json.has("entity")) {
-            entity = ResourceLocation.parse(json.get("entity").getAsString());
+            entity = Identifier.parse(json.get("entity").getAsString());
         }
 
         String name = null;
@@ -109,11 +111,13 @@ public class GiftTask implements TaskType<GiftTask.GiftRequirement, GiftTask.Gif
     @Nullable
     @Override
     public Item icon(GiftRequirement element) {
+        List<Holder<Item>> items = element.ingredient()
+                .getValues()
+                .stream()
+                .toList();
 
-        ItemStack[] stacks = element.ingredient().getItems();
-
-        if (stacks.length > 0 && !stacks[0].isEmpty()) {
-            return stacks[0].getItem();
+        if (!items.isEmpty()) {
+            return items.getFirst().value();
         }
 
         return null;
