@@ -1,3 +1,13 @@
 /summon quest_giver:quest_villager
 /summon minecraft:wolf
 /summon quest_giver:quest_villager
+/summon minecraft:wolf
+/summon quest_giver:quest_villager
+/quest_giver next Dev example_quest
+/summon minecraft:wolf
+/summon quest_giver:quest_villager
+/quest_giver next Dev example_quest
+/summon minecraft:wolf
+/summon quest_giver:quest_villager
+/quest_giver next Dev example_quest
+/summon minecraft:wolf

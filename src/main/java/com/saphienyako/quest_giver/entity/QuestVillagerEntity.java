@@ -46,18 +46,6 @@ public class QuestVillagerEntity extends Villager {
                 QuestGiverAPI.interactQuest((ServerPlayer)player, this.getId(), Component.literal("Example Quest"), hand, "example_quest");
             }
 
-     /*       else if (!stack.isEmpty() && player instanceof ServerPlayer && QuestGiverAPI.tryAcceptGift((ServerPlayer) player, hand)) {
-                player.swing(hand, true);
-            }  */
-
-            else if (player.getItemInHand(hand).getItem() == Items.NAME_TAG) {
-                setCustomName(player.getItemInHand(hand).getHoverName().copy());
-                setCustomNameVisible(true);
-                    if (player instanceof ServerPlayer) {
-                        QuestData.get((ServerPlayer) player).checkComplete(SpecialTask.INSTANCE, "special_task_example");
-                    }
-            }
-
             return InteractionResult.sidedSuccess(this.level().isClientSide);
         } else {
             return superResult;
