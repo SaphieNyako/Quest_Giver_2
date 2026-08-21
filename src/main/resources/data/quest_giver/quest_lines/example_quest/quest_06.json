@@ -2,7 +2,7 @@
   "parent": "quest_giver:quest_04",
   "complete": {
     "description": {
-      "translate": "Thanks for naming me."
+      "translate": "Thanks for naming your dog."
     },
     "title": {
       "translate": "Special Task Example"
@@ -11,16 +11,17 @@
   "icon": "minecraft:name_tag",
   "start": {
     "description": {
-      "translate": "Give me a name please."
+      "translate": "Give your dog the name 'Wolfie' please."
     },
     "title": {
-      "translate": "Special Task Example"
+      "translate": "Name Tag Example"
     }
   },
   "tasks": [
     {
-      "id": "quest_giver:special_task",
-      "action": "special_task_example"
+      "id": "quest_giver:name_entity",
+      "entity": "minecraft:wolf",
+      "name": "Wolfie"
     }
   ]
 }

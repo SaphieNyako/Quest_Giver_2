@@ -73,6 +73,7 @@ public class QuestGiver
         TaskTypes.register(new ResourceLocation(MOD_ID,"structure"), StructureTask.INSTANCE);
        // TaskTypes.register(new ResourceLocation(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
         TaskTypes.register(new ResourceLocation(MOD_ID, "complete_quest"), CompleteQuestTask.INSTANCE);
+        TaskTypes.register(new ResourceLocation(MOD_ID, "name_entity"), NameEntityTask.INSTANCE);
         TaskTypes.register(new ResourceLocation(MOD_ID,"special_task"), SpecialTask.INSTANCE);
 
         RewardTypes.register(new ResourceLocation(MOD_ID, "item"), ItemReward.INSTANCE);

@@ -12,11 +12,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -29,8 +32,14 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class EventListener {
-    
+
+    private final Map<UUID, Integer> pendingPetSwings = new HashMap<>();
+
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void showGui(RenderGuiOverlayEvent.Pre event) {
@@ -64,6 +73,12 @@ public class EventListener {
 
     @SubscribeEvent
     public void playerTick(TickEvent.PlayerTickEvent event) {
+
+        //PET SWING
+        if (!event.player.level.isClientSide && event.player instanceof ServerPlayer serverPlayer) {
+            tickPetSwing(serverPlayer);
+        }
+
         // Only check one / second
         if (event.player.tickCount % 20 == 0 && !event.player.level.isClientSide && event.player instanceof ServerPlayer player) {
             QuestData quests = QuestData.get(player);
@@ -170,10 +185,25 @@ public class EventListener {
             }
 
             Entity target = event.getTarget();
+            ItemStack stack = player.getMainHandItem();
+
+            // NAME TAG TASK
+            if (stack.is(Items.NAME_TAG)) {
+               String customName = stack.getHoverName().getString();
+
+               QuestData.get(player).checkComplete(NameEntityTask.INSTANCE, new NameEntityTask.Context(target, customName));
+
+            }
+
 
             // PET TASK
             if (player.getMainHandItem().isEmpty()) {
-                QuestData.get(player).checkComplete(AnimalPetTask.INSTANCE, target);
+                boolean completed = QuestData.get(player).checkComplete(AnimalPetTask.INSTANCE, target);
+
+                if (completed) {
+                    pet(player);
+                    pendingPetSwings.put(player.getUUID(), 6);
+                }
             }
 
             QuestLinkData link = QuestLinkManager.getMatchingLink(target);
@@ -182,9 +212,11 @@ public class EventListener {
                 return;
             }
 
-            // This NPC requires a special interaction item.
-            // EntityInteractSpecific handles it instead.
             if (link.interactionItem != null) {
+                return;
+            }
+
+            if (!stack.isEmpty()) {
                 return;
             }
 
@@ -221,6 +253,26 @@ public class EventListener {
         ServerPlayer player = event.getEntity();
         CompleteQuestTask.Context context = new CompleteQuestTask.Context(event.getQuestLineId(), event.getQuest().id);
         QuestData.get(player).checkComplete(CompleteQuestTask.INSTANCE, context);
+    }
+
+    private void tickPetSwing(ServerPlayer player) {
+        Integer ticks = pendingPetSwings.get(player.getUUID());
+
+        if (ticks == null) {
+            return;
+        }
+
+        if (ticks <= 1) {
+            pet(player);
+            pendingPetSwings.remove(player.getUUID());
+        } else {
+            pendingPetSwings.put(player.getUUID(), ticks - 1);
+        }
+    }
+
+    private void pet(ServerPlayer player) {
+        player.swing(InteractionHand.MAIN_HAND, true);
+        player.level.playSound(null, player.blockPosition(), SoundEvents.WOOL_HIT, SoundSource.PLAYERS, 0.5F, 1.2F);
     }
 
     //TODO Tree Grow
