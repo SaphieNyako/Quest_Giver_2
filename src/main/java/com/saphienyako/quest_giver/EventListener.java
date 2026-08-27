@@ -47,7 +47,6 @@ public class EventListener {
     
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-
     public void showGui( RenderGuiLayerEvent.Pre event) {
         if (Minecraft.getInstance().screen instanceof DisplayQuestScreen || Minecraft.getInstance().screen instanceof SelectQuestScreen) {
             event.setCanceled(true);
@@ -55,16 +54,23 @@ public class EventListener {
     }
 
     @SubscribeEvent
-    public void craftItem(PlayerEvent.ItemCraftedEvent event) {
-        if (event.getEntity() instanceof ServerPlayer) {
-            QuestData.get((ServerPlayer) event.getEntity()).checkComplete(CraftTask.INSTANCE, event.getCrafting());
+    public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            QuestData.get(player).attach(player);
         }
     }
 
     @SubscribeEvent
-    public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+    public void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             QuestData.get(player).attach(player);
+        }
+    }
+
+    @SubscribeEvent
+    public void craftItem(PlayerEvent.ItemCraftedEvent event) {
+        if (event.getEntity() instanceof ServerPlayer) {
+            QuestData.get((ServerPlayer) event.getEntity()).checkComplete(CraftTask.INSTANCE, event.getCrafting());
         }
     }
 
