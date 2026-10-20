@@ -12,34 +12,34 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AnimatedText {
-    
+
     private final Font font;
     private final int ticksPerStep;
     private final int charsPerStep;
     private final List<Page> pages;
-    
+
     private int tickCount = 0;
     private int currentPage = 0;
 
     public AnimatedText(int width, int height, int speed, List<Component> lines) {
         this(width, height, 1, speed, lines);
     }
-    
+
     public AnimatedText(int width, int height, int ticksPerStep, int charsPerStep, List<Component> lines) {
         this(Minecraft.getInstance().font, width, height, ticksPerStep, charsPerStep, lines);
     }
-    
+
     public AnimatedText(Font font, int width, int height, int ticksPerStep, int charsPerStep, List<Component> lines) {
         this.font = font;
         this.ticksPerStep = ticksPerStep;
         this.charsPerStep = charsPerStep;
-        
+
         List<FormattedCharSequence> wrapped = lines.stream()
                 .flatMap(line -> ComponentRenderUtils.wrapComponents(line, width, font).stream())
                 .toList();
-        
+
         int linesPerPage = Math.max(1, height / (font.lineHeight + 2));
-        
+
         List<Page> pages = new ArrayList<>();
         int idx = 0;
         while (idx < wrapped.size()) {
@@ -47,12 +47,12 @@ public class AnimatedText {
             pages.add(new Page(wrapped.subList(idx, end)));
             idx = end;
         }
-        
+
         if (pages.isEmpty()) pages.add(new Page(List.of(FormattedCharSequence.EMPTY)));
-        
+
         this.pages = List.copyOf(pages);
     }
-    
+
     public void tick() {
         this.tickCount += 1;
         if (this.tickCount >= this.ticksPerStep) {
@@ -60,25 +60,25 @@ public class AnimatedText {
             this.pages.get(this.currentPage).advance(this.charsPerStep);
         }
     }
-    
+
     public boolean canContinue() {
         return this.pages.get(this.currentPage).fullyDisplayed();
     }
-    
+
     public boolean isOnLastPage() {
         return this.currentPage >= this.pages.size() - 1;
     }
-    
+
     public void nextPage() {
         if (!this.isOnLastPage()) this.currentPage += 1;
     }
-    
+
     public void render(GuiGraphicsExtractor graphics, int x, int y) {
         this.pages.get(this.currentPage).render(graphics, x, y);
     }
 
     private class Page {
-        
+
         private final List<FormattedCharSequence> lines;
         private int visibleLines;
         private int visibleChars;
@@ -90,7 +90,7 @@ public class AnimatedText {
             this.visibleChars = 0;
             this.updateCurrentLength();
         }
-        
+
         public void advance(int amount) {
             if (this.visibleLines < this.lines.size()) {
                 this.visibleChars += amount;
@@ -101,7 +101,7 @@ public class AnimatedText {
                 }
             }
         }
-        
+
         private void updateCurrentLength() {
             if (this.visibleLines >= this.lines.size()) {
                 this.currentLength = 0;
@@ -115,18 +115,18 @@ public class AnimatedText {
                 this.currentLength = len.get();
             }
         }
-        
+
         public boolean fullyDisplayed() {
             return this.visibleLines >= this.lines.size();
         }
 
         public void render(GuiGraphicsExtractor graphics, int x, int y) {
             for (int i = 0; i < Math.min(this.visibleLines, this.lines.size()); i++) {
-                graphics.text(AnimatedText.this.font, this.lines.get(i), x, y + i * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFF, false);
+                graphics.text(AnimatedText.this.font, this.lines.get(i), x, y + i * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFFFF, false);
             }
             if (this.visibleLines < this.lines.size() && this.visibleChars > 0) {
                 FormattedCharSequence fsq = subSequence(this.lines.get(this.visibleLines), 0, this.visibleChars);
-                graphics.text(AnimatedText.this.font, fsq, x, y + this.visibleLines * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFF, false);
+                graphics.text(AnimatedText.this.font, fsq, x, y + this.visibleLines * (AnimatedText.this.font.lineHeight + 2), 0xFFFFFFFF, false);
             }
         }
 
@@ -151,4 +151,5 @@ public class AnimatedText {
             }
         }
     }
+
 }

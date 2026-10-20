@@ -32,9 +32,6 @@ public class BackgroundWidget extends AbstractWidget {
                 this.getX(), this.getY(), 0, 0, 240, HEIGHT, 256, 256);
         graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_02.png"),
                 this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT, 256, 256);
-
-     //   graphics.blit(Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_01.png"), this.getX(), this.getY(), 0, 0, 240, HEIGHT);
-     //   graphics.blit(Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName+  "_background_02.png"), this.getX() + 240, this.getY(), 0, 0, WIDTH - 240, HEIGHT);
     }
 
     @Override

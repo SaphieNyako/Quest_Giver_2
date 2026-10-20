@@ -58,17 +58,7 @@ public class SelectQuestScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-       // graphics.pose().pushPose();
-       // this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-    ////    this.extractBackground(graphics, mouseX, mouseY, partialTicks);
-
-       // graphics.pose().translate(0, 0, 20);
-       // super.render(graphics, mouseX, mouseY, partialTicks);
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
-
-       // graphics.pose().translate(0, 0, 20);
-       // this.drawTextLines(graphics, mouseX, mouseY);
-       // graphics.pose().popPose();
         this.drawTextLines(graphics);
     }
 
@@ -76,7 +66,7 @@ public class SelectQuestScreen extends Screen {
 
     private void drawTextLines(GuiGraphicsExtractor graphics) {
         if (this.minecraft != null) {
-            graphics.text(this.minecraft.font, this.title, (this.width / 2 - (this.minecraft.font.width(this.title) / 2)) + 20, this.top - 2 - this.minecraft.font.lineHeight, 0xFFFFFF, false);
+            graphics.text(this.minecraft.font, this.title, (this.width / 2 - (this.minecraft.font.width(this.title) / 2)) + 20, this.top - 2 - this.minecraft.font.lineHeight, 0xFFFFFFFF, true);
         }
     }
 

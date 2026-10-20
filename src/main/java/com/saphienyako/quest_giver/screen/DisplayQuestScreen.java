@@ -95,27 +95,21 @@ public class DisplayQuestScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-      //  graphics.pose().pushPose();
-      //  this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-
-    ////    this.extractBackground(graphics, mouseX, mouseY, partialTicks);
-
-
-     //   graphics.pose().translate(0, 0, 20);
-     //   super.render(graphics, mouseX, mouseY, partialTicks);
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
-
-      //  graphics.pose().translate(0, 0, 20);
-     //   this.drawTextLines(graphics, mouseX, mouseY);
-     //   graphics.pose().popPose();
         this.drawTextLines(graphics);
     }
 
     private void drawTextLines(GuiGraphicsExtractor graphics) {
-        if (this.minecraft != null) {
-            graphics.text(this.minecraft.font, this.title, (this.width / 2) - (this.minecraft.font.width(this.title) / 2) + 20, this.top - this.minecraft.font.lineHeight + 10, 0xFFFFFF, false);
-            this.text.render(graphics, this.left + EntityWidget.WIDTH + BackgroundWidget.HORIZONTAL_PADDING, this.top + BackgroundWidget.VERTICAL_PADDING);
+        if (this.minecraft == null) {
+            return;
         }
+
+        int backgroundX = this.left + EntityWidget.WIDTH;
+        int titleX = backgroundX + (BackgroundWidget.WIDTH - this.minecraft.font.width(this.title)) / 2;
+        int titleY = this.top;
+
+        graphics.text(this.minecraft.font, this.title, titleX, titleY, 0xFFFFFFFF, true);
+        this.text.render(graphics, backgroundX + BackgroundWidget.HORIZONTAL_PADDING, this.top + BackgroundWidget.VERTICAL_PADDING);
     }
 
     @Override

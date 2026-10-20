@@ -50,9 +50,10 @@ public class FancyButton extends Button {
         if (this.enabled.getAsBoolean()) {
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;
-        //    graphics.blit(this.texture, this.getX(), this.getY(), 0, 0, this.width, this.height);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, this.getX(), this.getY(), 0, 0, this.width, this.height, this.width, this.height);
-            graphics.text(font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, getFGColor() | Mth.ceil(this.alpha * 255) << 24);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, this.getX(), this.getY(), 0, 0, this.width, this.height, 256, 256);
+            int textX = this.getX() + (this.width - font.width(this.getMessage())) / 2;
+            int textY = this.getY() + (this.height - font.lineHeight) / 2;
+            graphics.text(font, this.getMessage(), textX, textY, 0xFFFFFFFF, true);
         }
     }
 }

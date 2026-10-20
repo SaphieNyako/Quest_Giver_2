@@ -19,6 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class QuestVillagerEntity extends Villager {
@@ -33,32 +34,19 @@ public class QuestVillagerEntity extends Villager {
     }
 
     @Override
-    public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
-        InteractionResult superResult = super.mobInteract(player, hand);
-
-        if (superResult != InteractionResult.PASS) {
-            return superResult;
-        }
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand, @NotNull Vec3 location) {
 
         ItemStack stack = player.getItemInHand(hand);
-
-        if (stack.isEmpty() && player instanceof ServerPlayer serverPlayer) {
-            QuestGiverAPI.interactQuest(serverPlayer, this.getId(), Component.literal("Example Quest"), hand, "example_quest");
-
-            return InteractionResult.SUCCESS_SERVER;
-        }
-
-        if (stack.is(Items.NAME_TAG)) {
-            setCustomName(stack.getHoverName().copy());
-            setCustomNameVisible(true);
+        if (hand == InteractionHand.MAIN_HAND && stack.isEmpty()) {
 
             if (player instanceof ServerPlayer serverPlayer) {
-                QuestData.get(serverPlayer).checkComplete(SpecialTask.INSTANCE, "special_task_example");
+                QuestGiverAPI.interactQuest(serverPlayer, this.getId(), Component.literal("Example Quest"), hand, "example_quest");
             }
 
             return InteractionResult.SUCCESS;
         }
 
-        return InteractionResult.PASS;
+        return super.interact(player, hand, location);
     }
+
 }

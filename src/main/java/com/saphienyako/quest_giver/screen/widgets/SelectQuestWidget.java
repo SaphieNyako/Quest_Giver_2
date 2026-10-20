@@ -46,17 +46,10 @@ public class SelectQuestWidget extends Button {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
 
-     //   graphics.blit(Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID,"textures/gui/" + backgroundName + "_background_03.png"), this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT);
         graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(QuestGiver.MOD_ID, "textures/gui/" + backgroundName + "_background_03.png"),
                 this.getX(), this.getY(), 0, 0, WIDTH, HEIGHT, 256, 256);
 
-      //  graphics.pose().pushPose();
-     //   graphics.pose().translate(0, 0, 10);
-      //  graphics.renderFakeItem(this.iconStack, this.getX() + 20, this.getY() + (this.height - 16) / 2);
         graphics.fakeItem(this.iconStack, this.getX() + 20, this.getY() + (this.height - 16) / 2);
-
-    //    graphics.text(Minecraft.getInstance().font, quest.display().title, this.getX() + 38, this.getY() + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFF, true);
-    //    graphics.pose().popPose();
-        graphics.text(font, quest.display().title, this.getX() + 38, this.getY() + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFF, true);
+        graphics.text(font, quest.display().title, this.getX() + 38, this.getY() + ((HEIGHT - font.lineHeight) / 2), 0xFFFFFFFF, true);
     }
 }
