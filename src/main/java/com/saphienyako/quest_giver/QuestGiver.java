@@ -68,6 +68,7 @@ public class QuestGiver
         TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"structure"), StructureTask.INSTANCE);
         //  TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"tree"), GrowTreeTask.INSTANCE);
         TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID, "complete_quest"), CompleteQuestTask.INSTANCE);
+        TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID, "name_entity"), NameEntityTask.INSTANCE);
         TaskTypes.register(Identifier.fromNamespaceAndPath(MOD_ID,"special_task"), SpecialTask.INSTANCE);
 
         RewardTypes.register(Identifier.fromNamespaceAndPath(MOD_ID, "item"), ItemReward.INSTANCE);
