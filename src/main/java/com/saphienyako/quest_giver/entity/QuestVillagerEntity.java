@@ -35,15 +35,11 @@ public class QuestVillagerEntity extends Villager {
 
     @Override
     public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand, @NotNull Vec3 location) {
-        System.out.println("INTERACT: " +
-                "Side=" + (player.level().isClientSide() ? "CLIENT" : "SERVER") +
-                ", Hand=" + hand +
-                ", Empty=" + player.getItemInHand(hand).isEmpty());
+
         ItemStack stack = player.getItemInHand(hand);
         if (hand == InteractionHand.MAIN_HAND && stack.isEmpty()) {
 
             if (player instanceof ServerPlayer serverPlayer) {
-                System.out.println("OPENING QUEST GUI!");
                 QuestGiverAPI.interactQuest(serverPlayer, this.getId(), Component.literal("Example Quest"), hand, "example_quest");
             }
 
